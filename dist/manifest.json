@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "SecureVision AI - Privacy-Preserving Visual AI Agent",
+  "short_name": "SecureVision AI",
+  "version": "1.0.0",
+  "description": "Zero-leakage client-side visual browser agent for HackIndia AI & CyberTech Hackathon 2026. Redacts sensitive visual data before AI processing.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_title": "SecureVision AI - Privacy Guardian",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/dashboard/index.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

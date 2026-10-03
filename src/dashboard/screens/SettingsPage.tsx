@@ -9,6 +9,7 @@ import {
   getStoredSettings,
   saveStoredSettings,
 } from '../../services/storage';
+import { API_BASE_URL } from '../../shared/api';
 
 export const SettingsPage: React.FC = () => {
   const [settings, setSettings] = useState<ExtensionSettings>(DEFAULT_SETTINGS);
@@ -44,7 +45,7 @@ export const SettingsPage: React.FC = () => {
     setEndpointStatus('idle');
     setEndpointInfo('');
     try {
-      const endpoint = settings.serverEndpoint || 'http://127.0.0.1:8000';
+      const endpoint = settings.serverEndpoint || API_BASE_URL;
       const res = await fetch(`${endpoint.replace(/\/$/, '')}/api/health`);
       if (res.ok) {
         const data = await res.json();
@@ -248,7 +249,7 @@ export const SettingsPage: React.FC = () => {
               type="text"
               value={settings.serverEndpoint}
               onChange={(e) => setSettings({ ...settings, serverEndpoint: e.target.value })}
-              placeholder="http://127.0.0.1:8000"
+              placeholder={API_BASE_URL}
               className="flex-1 text-xs font-mono p-2.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500"
             />
             <Button

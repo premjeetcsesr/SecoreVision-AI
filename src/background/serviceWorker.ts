@@ -1,4 +1,5 @@
 import { ExtensionSettings, PrivacyShieldStatus } from '../types';
+import { API_BASE_URL } from '../shared/api';
 
 /**
  * SecureVision AI - Background Service Worker (Manifest V3)
@@ -9,7 +10,7 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   selectedModel: 'Local MobileNet-V4 Vision (Client-only)',
   hardwareEngine: 'webgpu',
   privacyMode: 'strict',
-  serverEndpoint: 'http://127.0.0.1:11434',
+  serverEndpoint: API_BASE_URL,
   autoRedactFinancial: true,
   autoRedactAuth: true,
   autoRedactPii: true,

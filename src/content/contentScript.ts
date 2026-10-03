@@ -5,6 +5,8 @@
  * 3. Highlights interacting elements visually on the page with HUD banner for user transparency.
  */
 
+import { apiUrl } from '../shared/api';
+
 // Cross-browser compatibility wrapper
 const extensionApi = typeof chrome !== 'undefined' ? chrome : (window as any).browser;
 
@@ -578,7 +580,7 @@ async function startWebcamHandHUD(): Promise<boolean> {
               updateVirtualCursor(lastSmoothX, lastSmoothY, true);
 
               // Physical OS click via backend
-              fetch('http://127.0.0.1:8000/api/cursor/move', {
+              fetch(apiUrl('/api/cursor/move'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ norm_x: lastSmoothX, norm_y: lastSmoothY, is_click: true }),
@@ -600,7 +602,7 @@ async function startWebcamHandHUD(): Promise<boolean> {
             const nowOs = Date.now();
             if (nowOs - lastHoverTime > 30) {
               lastHoverTime = nowOs;
-              fetch('http://127.0.0.1:8000/api/cursor/move', {
+              fetch(apiUrl('/api/cursor/move'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ norm_x: lastSmoothX, norm_y: lastSmoothY, is_click: false }),

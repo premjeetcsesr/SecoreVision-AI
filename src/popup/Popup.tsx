@@ -26,6 +26,7 @@ import { DEFAULT_TAB_INFO, saveStoredTask } from '../services/storage';
 import { GestureControlCard } from '../shared/GestureControlCard';
 import { RecognizedGesture } from '../services/handGestureEngine';
 import { startInPageGestureHUD, stopInPageGestureHUD } from '../services/handGestureOverlay';
+import { apiUrl } from '../shared/api';
 
 interface PopupProps {
   onOpenDashboard?: (screen?: string) => void;
@@ -78,7 +79,7 @@ export const Popup: React.FC<PopupProps> = ({ onOpenDashboard }) => {
 
   useEffect(() => {
     // Check live FastAPI backend health on mount
-    fetch('http://127.0.0.1:8000/api/health')
+    fetch(apiUrl('/api/health'))
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 'healthy') {
@@ -609,7 +610,7 @@ export const Popup: React.FC<PopupProps> = ({ onOpenDashboard }) => {
     let providerUsed = 'Local Vision Engine';
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/agent/step', {
+      const response = await fetch(apiUrl('/api/agent/step'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

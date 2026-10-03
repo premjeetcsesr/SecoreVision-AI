@@ -22,6 +22,7 @@ import {
   getStoredSensitiveItems,
   getStoredShieldStatus,
 } from '../../services/storage';
+import { apiUrl } from '../../shared/api';
 import { SensitiveItem, Task, PrivacyShieldStatus } from '../../types';
 
 interface OverviewDashboardProps {
@@ -64,7 +65,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   useEffect(() => {
     loadData();
 
-    fetch('http://127.0.0.1:8000/api/health')
+    fetch(apiUrl('/api/health'))
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 'healthy') {

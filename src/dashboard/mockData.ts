@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '../shared/api';
+
 import { ExtensionSettings, PrivacyShieldStatus, SensitiveItem, Task, TabInfo } from '../types';
 
 export const MOCK_TAB_INFO: TabInfo = {
@@ -27,7 +29,7 @@ export const MOCK_SETTINGS: ExtensionSettings = {
   selectedModel: 'Google Gemini 2.5 Flash (via FastAPI Gateway)',
   hardwareEngine: 'webgpu',
   privacyMode: 'strict',
-  serverEndpoint: 'http://127.0.0.1:8000',
+  serverEndpoint: API_BASE_URL,
   autoRedactFinancial: true,
   autoRedactAuth: true,
   autoRedactPii: true,

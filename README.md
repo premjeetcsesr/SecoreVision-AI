@@ -70,12 +70,13 @@ hackthone/
 ├── demo/
 │   └── synthetic-sensitive-form/
 │       └── index.html               # Safe RFC-2606 compliant testbed page
-├── privacylens/server/             # FastAPI Backend Gateway
+├── privacylens/server/             # FastAPI backend (Render)
 │   ├── main.py                     # API Endpoints (/analyze, /validate, /capabilities)
 │   ├── schemas.py                  # Pydantic v2 data contracts
 │   ├── pii_guard.py                # Server-side defense-in-depth PII scanner
 │   ├── providers/                  # Gemini & Mock LLM providers
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── .env.example                # Backend-only local environment template
 ├── src/
 │   ├── dashboard/
 │   │   ├── screens/
@@ -88,22 +89,18 @@ hackthone/
 │   │   └── DashboardShell.tsx      # Cybersecurity sidebar layout
 │   ├── popup/
 │   │   └── Popup.tsx               # Chrome Extension popup & hand gesture HUD
-│   ├── content/
-│   │   └── contentScript.ts        # DOM extraction, virtual cursor HUD, actions
-│   ├── background/
-│   │   └── serviceWorker.ts        # MV3 background router
-│   ├── services/
-│   │   ├── piiDetector.ts          # Layered regex + DOM + Luhn detector
-│   │   ├── redactionEngine.ts      # Canvas 2D irreversible solid blackout masks
-│   │   ├── privacyGate.ts          # Fail-closed outbound network gate
-│   │   ├── actionValidator.ts      # Viewport bounds & consequential action guard
-│   │   └── storage.ts              # Chrome storage & localStorage sync
+│   ├── background/                 # Manifest V3 service worker
+│   ├── content/                    # Page content script
+│   ├── services/                   # Privacy, storage, and gesture services
+│   ├── shared/api.ts               # Environment-based backend URL
 │   └── tests/
 │       └── secureVisionCore.test.ts # Comprehensive Vitest test suite
-├── public/
-│   ├── demo.html                   # Static dev preview of synthetic testbed
-│   └── manifest.json               # Chrome Extension Manifest V3 configuration
+├── public/                         # Static Vite assets and icons
+├── manifest.json                   # Chrome Extension Manifest V3 configuration
 ├── .env.example
+├── .gitignore
+├── vercel.json                     # Vite dashboard / extension build
+├── render.yaml                     # FastAPI backend service
 ├── package.json
 └── README.md
 ```
@@ -198,3 +195,44 @@ npm run dev
 - **Project:** SecureVision AI
 - **Event:** HackIndia AI & CyberTech Hackathon 2026
 - **Architecture:** Client-Side Zero-Leakage Privacy Shield (Manifest V3 + WebGPU + FastAPI)
+
+---
+
+## ☁️ 8. Deploy Frontend and Backend
+
+The dashboard and FastAPI API deploy as separate services. The Chrome extension is
+still built into `dist/` by the frontend build; publish it separately through the
+Chrome Web Store or load that build unpacked for testing.
+
+### Local environment
+
+1. Copy the root `.env.example` to `.env`. Set `VITE_API_BASE_URL` to the backend
+   URL. The root `.env` is ignored by Git.
+2. Copy `privacylens/server/.env.example` to `privacylens/server/.env` and set
+   backend-only values such as `GEMINI_API_KEY` if using Gemini.
+3. Start the API from `privacylens/server` and the dashboard from the repository
+   root using the Quickstart commands above.
+
+`VITE_API_BASE_URL` is embedded in the frontend build and is public. Do not put
+provider keys or other secrets in root `.env` or in any `VITE_*` variable.
+
+### Deployment order
+
+1. Import the repository into Vercel and keep the project root at the repository
+   root. `vercel.json` configures `npm ci`, `npm run build`, and `dist`. Deploy
+   once to learn the exact Vercel origin.
+2. Create a Render Blueprint from this repository and select `render.yaml`.
+   Set `CORS_ORIGINS` to the exact Vercel frontend origin (no trailing slash).
+3. Set the Vercel environment variable `VITE_API_BASE_URL` to the Render API URL,
+   for example `https://securevision-api.onrender.com`, and redeploy. Vite values
+   are build-time configuration.
+
+### Render backend
+
+1. Optionally set `LLM_PROVIDER=gemini` and `GEMINI_API_KEY` in Render's
+   environment settings. Keep API keys in Render, never in Vercel's
+   `VITE_*` variables.
+2. Confirm the service health check at `/health`.
+
+After first deployment, open the dashboard Settings and use the saved
+`serverEndpoint` setting if you need to override the build-time API URL.

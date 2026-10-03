@@ -13,6 +13,19 @@ def test_health():
     assert data["pii_guard_active"] is True
     print("[PASS] Health check passed!")
 
+
+def test_cors_allows_configured_frontend():
+    res = client.get("/api/health", headers={"Origin": "http://localhost:5173"})
+    assert res.status_code == 200
+    assert res.headers["access-control-allow-origin"] == "http://localhost:5173"
+
+
+def test_cors_rejects_unconfigured_origin():
+    res = client.get("/api/health", headers={"Origin": "https://untrusted.example"})
+    assert res.status_code == 200
+    assert "access-control-allow-origin" not in res.headers
+
+
 def test_sanitized_agent_step():
     payload = {
         "task": "Fill out personal details and submit form",
@@ -77,6 +90,8 @@ def test_raw_pii_rejection_guard():
 if __name__ == "__main__":
     print("Running PrivacyLens Backend Test Suite...")
     test_health()
+    test_cors_allows_configured_frontend()
+    test_cors_rejects_unconfigured_origin()
     test_sanitized_agent_step()
     test_raw_pii_rejection_guard()
     print("ALL BACKEND TESTS PASSED SUCCESSFULLY! [OK]")

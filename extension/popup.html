@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Privacy Guard - Anti-AI Agent Shield</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="privacy-popup">
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-shield-orb">
+          <span class="logo-shield">🛡️</span>
+        </div>
+        <div>
+          <div class="brand-title-row">
+            <h1>Screen Privacy Guard</h1>
+            <span class="brand-shield-tag">ANTI-AI</span>
+          </div>
+          <span class="version-tag">Privacy-Preserving Vision Agent</span>
+        </div>
+      </div>
+      <div class="status-indicator paused" id="shield-status-badge" title="Screen Protection State">
+        <span class="status-dot"></span>
+        <span class="status-text" id="status-text-label">Shield Paused</span>
+      </div>
+    </header>
+
+    <!-- Master Screen Shield Card -->
+    <section class="master-shield-card">
+      <div class="shield-card-glow"></div>
+      <div class="shield-card-content">
+        <div class="shield-info">
+          <div class="shield-header-row">
+            <span class="shield-title">AI Screen Shield & Privacy Gate</span>
+            <span class="shield-badge-pill" id="live-leak-badge">SHIELD OFF ⚠️</span>
+          </div>
+          <p class="shield-subtitle">Local screen capture + PII redaction. Only sanitized layouts sent to AI agent.</p>
+        </div>
+        <label class="switch" title="Toggle Screen AI Protection">
+          <input type="checkbox" id="master-shield-toggle">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="popup-tabs">
+      <button class="tab-btn active" data-tab="agent-task">
+        <span>⚡</span> Agent Task
+      </button>
+      <button class="tab-btn" data-tab="live-shield">
+        <span>🛡️</span> Live Shield
+      </button>
+      <button class="tab-btn" data-tab="local-vault">
+        <span>🔒</span> Vault (<b id="vault-count-badge">0</b>)
+      </button>
+      <button class="tab-btn" data-tab="audit-log">
+        <span>📋</span> Audit
+      </button>
+    </nav>
+
+    <!-- TAB 1: Agent Task & Action Plan (Matching User Architecture) -->
+    <main class="tab-content active" id="tab-agent-task">
+      <!-- Command Composer -->
+      <div class="task-composer-card">
+        <label for="agent-task-input" class="section-label">User Command</label>
+        <div class="task-input-wrapper">
+          <input type="text" id="agent-task-input" class="agent-text-field" placeholder="e.g. 'Find Next button', 'Submit form', 'Click Pay'..." value="Find Next button" />
+          <button id="run-agent-task-btn" class="primary-btn glow-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            RUN
+          </button>
+        </div>
+
+        <!-- Quick Prompt Chips -->
+        <div class="preset-prompts-row">
+          <span class="prompt-chip" data-task="Find Next button">Find Next button</span>
+          <span class="prompt-chip" data-task="Submit the registration form">Submit form</span>
+          <span class="prompt-chip" data-task="Reset Fields">Reset fields</span>
+          <span class="prompt-chip" data-task="Scroll down">Scroll down</span>
+        </div>
+      </div>
+
+      <!-- Architecture Pipeline Stepper -->
+      <div class="architecture-stepper-card">
+        <div class="stepper-title">
+          <span>Agent Execution Pipeline</span>
+          <span class="stepper-status-pill" id="stepper-status-pill">Ready</span>
+        </div>
+
+        <div class="pipeline-flow">
+          <div class="flow-step" id="flow-step-1">
+            <span class="step-num">1</span>
+            <div class="step-details">
+              <strong>User Command</strong>
+              <span>Task input dispatched</span>
+            </div>
+          </div>
+
+          <div class="flow-divider">↓</div>
+
+          <div class="flow-step" id="flow-step-2">
+            <span class="step-num">2</span>
+            <div class="step-details">
+              <strong>Screen Capture + Local Vision</strong>
+              <span>Client DOM/OCR analysis</span>
+            </div>
+          </div>
+
+          <div class="flow-divider">↓</div>
+
+          <div class="flow-step" id="flow-step-3">
+            <span class="step-num">3</span>
+            <div class="step-details">
+              <strong>PII Detection & Privacy Gate</strong>
+              <span>Canvas mask + DOM cloaking (0 leaks)</span>
+            </div>
+          </div>
+
+          <div class="flow-divider">↓</div>
+
+          <div class="flow-step" id="flow-step-4">
+            <span class="step-num">4</span>
+            <div class="step-details">
+              <strong>Backend AI Reasoning</strong>
+              <span>Sanitized context only</span>
+            </div>
+          </div>
+
+          <div class="flow-divider">↓</div>
+
+          <div class="flow-step" id="flow-step-5">
+            <span class="step-num">5</span>
+            <div class="step-details">
+              <strong>Action Plan & Local Execution</strong>
+              <span>Target validated & clicked on screen</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Plan Result Box -->
+      <div class="action-decision-box" id="action-decision-box">
+        <div class="decision-header">
+          <span class="decision-badge" id="decision-action-badge">ACTION PLAN</span>
+          <span class="decision-target" id="decision-target-text">Awaiting command...</span>
+        </div>
+        <p class="decision-reasoning" id="decision-reasoning-text">Enter or click a command above to run the privacy-preserving vision agent.</p>
+        <div class="decision-footer">
+          <span class="audit-tag-green">🛡️ 0 RAW LEAKS VERIFIED</span>
+          <span class="latency-tag" id="decision-latency-text">0 ms</span>
+        </div>
+      </div>
+
+      <!-- Sensitive Action Confirmation Modal -->
+      <div class="confirmation-card hidden" id="confirmation-card">
+        <div class="confirm-header">
+          <span class="confirm-icon">⚠️</span>
+          <strong>Confirm Sensitive Action</strong>
+        </div>
+        <p id="confirmation-msg">The agent planned a sensitive submission action. Do you authorize execution?</p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel-btn" class="btn-cancel">Cancel</button>
+          <button id="confirm-proceed-btn" class="btn-confirm">Proceed & Execute</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 2: Live Shield & Scanner -->
+    <section class="tab-content" id="tab-live-shield">
+      <div class="action-buttons-row">
+        <button id="scan-now-btn" class="primary-action-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Scan & Shield Screen
+        </button>
+        <button id="save-vault-btn" class="secondary-action-btn" title="Store detected sensitive records in local browser storage">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          </svg>
+          Save to Vault
+        </button>
+      </div>
+
+      <!-- Shield Visual Mask Style -->
+      <div class="section-group">
+        <div class="section-header-flex">
+          <label class="section-label">Screen Mask Technique</label>
+          <span class="section-hint">Select how data is hidden on screen</span>
+        </div>
+        <div class="mode-chips">
+          <button class="chip active" data-mode="blackout" title="100% Solid Opaque Blackout - Impenetrable to AI Vision & OCR">
+            <span class="chip-icon">⬛</span> Blackout
+          </button>
+          <button class="chip" data-mode="blur" title="Heavy Gaussian Blur Filter">
+            <span class="chip-icon">💧</span> Deep Blur
+          </button>
+          <button class="chip" data-mode="pixelate" title="Heavy Mosaic Pixel Block">
+            <span class="chip-icon">🔲</span> Pixelate
+          </button>
+          <button class="chip" data-mode="semantic" title="Synthetic Token Badge Replacement">
+            <span class="chip-icon">🏷️</span> Semantic
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Detection Breakdown -->
+      <div class="telemetry-panel">
+        <div class="panel-header">
+          <span>Detected Sensitive Items on Screen</span>
+          <span class="live-status-dot" id="scan-feedback-text">Live Protected</span>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card card-cards">
+            <div class="metric-top">
+              <span class="metric-icon">💳</span>
+              <span class="metric-num" id="stat-cards">0</span>
+            </div>
+            <span class="metric-name">Cards & CVV</span>
+          </div>
+
+          <div class="metric-card card-pwd">
+            <div class="metric-top">
+              <span class="metric-icon">🔑</span>
+              <span class="metric-num" id="stat-passwords">0</span>
+            </div>
+            <span class="metric-name">Passwords & Keys</span>
+          </div>
+
+          <div class="metric-card card-emails">
+            <div class="metric-top">
+              <span class="metric-icon">✉️</span>
+              <span class="metric-num" id="stat-emails">0</span>
+            </div>
+            <span class="metric-name">Emails</span>
+          </div>
+
+          <div class="metric-card card-phones">
+            <div class="metric-top">
+              <span class="metric-icon">📞</span>
+              <span class="metric-num" id="stat-phones">0</span>
+            </div>
+            <span class="metric-name">Phone Numbers</span>
+          </div>
+
+          <div class="metric-card card-ssn">
+            <div class="metric-top">
+              <span class="metric-icon">🪪</span>
+              <span class="metric-num" id="stat-ssn">0</span>
+            </div>
+            <span class="metric-name">SSN / Aadhaar / ID</span>
+          </div>
+
+          <div class="metric-card card-faces">
+            <div class="metric-top">
+              <span class="metric-icon">👤</span>
+              <span class="metric-num" id="stat-faces">0</span>
+            </div>
+            <span class="metric-name">Detected Faces</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Local Browser Vault -->
+    <section class="tab-content" id="tab-local-vault">
+      <div class="vault-header-card">
+        <div class="vault-info">
+          <div class="vault-title-row">
+            <h3>Local Browser Storage Vault</h3>
+            <span class="storage-tag">IndexedDB Vault</span>
+          </div>
+          <p class="vault-desc">All detected records are stored strictly in your browser's IndexedDB local sandbox. Zero cloud storage or external API access.</p>
+        </div>
+        <div class="vault-action-row">
+          <button id="export-vault-btn" class="vault-btn btn-export" title="Export local vault to JSON">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export JSON
+          </button>
+          <button id="clear-vault-btn" class="vault-btn btn-clear" title="Permanently delete all stored local records">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Clear Vault
+          </button>
+        </div>
+      </div>
+
+      <!-- Vault Search & Filter -->
+      <div class="vault-filter-bar">
+        <input type="text" id="vault-search-input" placeholder="Search local vault records..." />
+        <select id="vault-category-filter">
+          <option value="all">All Categories</option>
+          <option value="creditCard">Credit Cards</option>
+          <option value="password">Passwords / Keys</option>
+          <option value="email">Emails</option>
+          <option value="phone">Phones</option>
+          <option value="ssn">SSN / Aadhaar</option>
+          <option value="face">Faces</option>
+        </select>
+      </div>
+
+      <!-- Vault Items List -->
+      <div class="vault-records-list" id="vault-records-list">
+        <div class="vault-empty-state" id="vault-empty-state">
+          <span class="empty-icon">📂</span>
+          <p>No sensitive records stored in local browser yet.</p>
+          <small>Click "Scan & Shield Screen" on any page with forms or credentials to populate.</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Audit & Logs -->
+    <section class="tab-content" id="tab-audit-log">
+      <div class="security-guarantee-card">
+        <div class="card-title">Security & Zero-Leakage Checklist</div>
+        <div class="checklist-grid">
+          <div class="check-item verified">
+            <span class="check-icon">✓</span>
+            <span>Raw Screen Capture Masked from AI</span>
+          </div>
+          <div class="check-item verified">
+            <span class="check-icon">✓</span>
+            <span>DOM Text Cloaked (Zero Crawler Leaks)</span>
+          </div>
+          <div class="check-item verified">
+            <span class="check-icon">✓</span>
+            <span>100% Client-Side Local Regex & OCR</span>
+          </div>
+          <div class="check-item verified">
+            <span class="check-icon">✓</span>
+            <span>Storage Restricted to chrome.storage.local</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="log-section">
+        <div class="log-header">
+          <span>Live Protection Event Log</span>
+          <button id="clear-logs-btn" class="text-btn">Clear Logs</button>
+        </div>
+        <div class="log-feed" id="log-feed">
+          <div class="log-item ready">
+            <span class="log-time">Now</span>
+            <span class="log-msg">Screen Privacy Guard active. AI agent screen shield engaged.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="storage/indexeddb-vault.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

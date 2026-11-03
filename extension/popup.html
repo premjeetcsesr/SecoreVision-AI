@@ -3,189 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Screen Privacy Guard - Anti-AI Agent Shield</title>
+  <title>Screen Privacy Guard — JARVIS AI MARK LIV</title>
   <link rel="stylesheet" href="popup.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="privacy-popup">
-  <div class="popup-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="brand">
-        <div class="brand-shield-orb">
-          <span class="logo-shield">🛡️</span>
+<body class="jarvis-body">
+  <div class="hud-window">
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 1. TOP BRAND HEADER (Screen Privacy Guard & Controls)               -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <header class="privacy-top-header">
+      <div class="privacy-brand-row">
+        <div class="brand-shield-orb" title="Screen Privacy Guard Vision Shield">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
         </div>
-        <div>
-          <div class="brand-title-row">
+        <div class="brand-title-box">
+          <div class="brand-title-line">
             <h1>Screen Privacy Guard</h1>
             <span class="brand-shield-tag">ANTI-AI</span>
           </div>
           <span class="version-tag">Privacy-Preserving Vision Agent</span>
         </div>
       </div>
-      <div class="status-indicator paused" id="shield-status-badge" title="Screen Protection State">
-        <span class="status-dot"></span>
-        <span class="status-text" id="status-text-label">Shield Paused</span>
+
+      <div class="top-controls-right">
+        <!-- Shield State Badge -->
+        <div class="privacy-status-badge paused" id="shield-status-badge" title="Screen Protection State">
+          <span class="status-dot"></span>
+          <span class="status-text" id="status-text-label">Shield Paused</span>
+        </div>
+
+        <!-- Language Selector: Hindi Indian, English -->
+        <div class="lang-selector-group" title="JARVIS Conversational Voice Language">
+          <span class="lang-icon">🌐</span>
+          <select id="jarvis-lang-select" class="lang-select">
+            <option value="hi-IN" selected>Hindi (Indian) हिन्दी</option>
+            <option value="en-IN">English (Indian/US)</option>
+          </select>
+        </div>
+
+        <!-- Conversational Voice Loop Toggle -->
+        <button id="btn-voice-conversational" class="voice-mode-pill active" title="Hands-free back-and-forth conversational loop">
+          <span class="v-dot"></span>
+          <span id="voice-mode-label">VOICE CHAT: AUTO</span>
+        </button>
+
+        <!-- Fullscreen / Expand Tab Button -->
+        <button id="btn-fullscreen-toggle" class="title-icon-btn" title="Expand to Fullscreen / Full Tab [F11]">
+          ⛶
+        </button>
       </div>
     </header>
 
-    <!-- Master Screen Shield Card -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 2. MASTER SCREEN SHIELD & PRIVACY GATE CARD                         -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <section class="master-shield-card">
       <div class="shield-card-glow"></div>
       <div class="shield-card-content">
         <div class="shield-info">
           <div class="shield-header-row">
-            <span class="shield-title">AI Screen Shield & Privacy Gate</span>
+            <span class="shield-title">AI Screen Shield &amp; Privacy Gate</span>
             <span class="shield-badge-pill" id="live-leak-badge">SHIELD OFF ⚠️</span>
           </div>
           <p class="shield-subtitle">Local screen capture + PII redaction. Only sanitized layouts sent to AI agent.</p>
         </div>
-        <label class="switch" title="Toggle Screen AI Protection">
+        <label class="switch" title="Toggle AI Screen Privacy Gate">
           <input type="checkbox" id="master-shield-toggle">
           <span class="slider round"></span>
         </label>
       </div>
     </section>
 
-    <!-- Navigation Tabs -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 3. NAVIGATION TABS                                                  -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <nav class="popup-tabs">
-      <button class="tab-btn active" data-tab="agent-task">
-        <span>⚡</span> Agent Task
+      <button class="tab-btn active" data-tab="live-shield" id="live-shield-tab-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>Live Shield</span>
       </button>
-      <button class="tab-btn" data-tab="live-shield">
-        <span>🛡️</span> Live Shield
+
+      <button class="tab-btn" data-tab="local-vault" id="local-vault-tab-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Vault ( <b id="vault-count-badge">0</b> )</span>
       </button>
-      <button class="tab-btn" data-tab="local-vault">
-        <span>🔒</span> Vault (<b id="vault-count-badge">0</b>)
+
+      <button class="tab-btn" data-tab="audit-log" id="audit-log-tab-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>Audit</span>
       </button>
-      <button class="tab-btn" data-tab="audit-log">
-        <span>📋</span> Audit
+
+      <button class="tab-btn" data-tab="ai-agent" id="ai-agent-tab-btn">
+        <span>⚡</span>
+        <span>AI Directives</span>
+      </button>
+
+      <button class="tab-btn" data-tab="settings" id="settings-tab-btn">
+        <span>⚙️</span>
+        <span>Settings</span>
       </button>
     </nav>
 
-    <!-- TAB 1: Agent Task & Action Plan (Matching User Architecture) -->
-    <main class="tab-content active" id="tab-agent-task">
-      <!-- Command Composer -->
-      <div class="task-composer-card">
-        <label for="agent-task-input" class="section-label">User Command</label>
-        <div class="task-input-wrapper">
-          <input type="text" id="agent-task-input" class="agent-text-field" placeholder="e.g. 'Find Next button', 'Submit form', 'Click Pay'..." value="Find Next button" />
-          <button id="run-agent-task-btn" class="primary-btn glow-btn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            RUN
-          </button>
-        </div>
-
-        <!-- Quick Prompt Chips -->
-        <div class="preset-prompts-row">
-          <span class="prompt-chip" data-task="Find Next button">Find Next button</span>
-          <span class="prompt-chip" data-task="Submit the registration form">Submit form</span>
-          <span class="prompt-chip" data-task="Reset Fields">Reset fields</span>
-          <span class="prompt-chip" data-task="Scroll down">Scroll down</span>
-        </div>
-      </div>
-
-      <!-- Architecture Pipeline Stepper -->
-      <div class="architecture-stepper-card">
-        <div class="stepper-title">
-          <span>Agent Execution Pipeline</span>
-          <span class="stepper-status-pill" id="stepper-status-pill">Ready</span>
-        </div>
-
-        <div class="pipeline-flow">
-          <div class="flow-step" id="flow-step-1">
-            <span class="step-num">1</span>
-            <div class="step-details">
-              <strong>User Command</strong>
-              <span>Task input dispatched</span>
-            </div>
-          </div>
-
-          <div class="flow-divider">↓</div>
-
-          <div class="flow-step" id="flow-step-2">
-            <span class="step-num">2</span>
-            <div class="step-details">
-              <strong>Screen Capture + Local Vision</strong>
-              <span>Client DOM/OCR analysis</span>
-            </div>
-          </div>
-
-          <div class="flow-divider">↓</div>
-
-          <div class="flow-step" id="flow-step-3">
-            <span class="step-num">3</span>
-            <div class="step-details">
-              <strong>PII Detection & Privacy Gate</strong>
-              <span>Canvas mask + DOM cloaking (0 leaks)</span>
-            </div>
-          </div>
-
-          <div class="flow-divider">↓</div>
-
-          <div class="flow-step" id="flow-step-4">
-            <span class="step-num">4</span>
-            <div class="step-details">
-              <strong>Backend AI Reasoning</strong>
-              <span>Sanitized context only</span>
-            </div>
-          </div>
-
-          <div class="flow-divider">↓</div>
-
-          <div class="flow-step" id="flow-step-5">
-            <span class="step-num">5</span>
-            <div class="step-details">
-              <strong>Action Plan & Local Execution</strong>
-              <span>Target validated & clicked on screen</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action Plan Result Box -->
-      <div class="action-decision-box" id="action-decision-box">
-        <div class="decision-header">
-          <span class="decision-badge" id="decision-action-badge">ACTION PLAN</span>
-          <span class="decision-target" id="decision-target-text">Awaiting command...</span>
-        </div>
-        <p class="decision-reasoning" id="decision-reasoning-text">Enter or click a command above to run the privacy-preserving vision agent.</p>
-        <div class="decision-footer">
-          <span class="audit-tag-green">🛡️ 0 RAW LEAKS VERIFIED</span>
-          <span class="latency-tag" id="decision-latency-text">0 ms</span>
-        </div>
-      </div>
-
-      <!-- Sensitive Action Confirmation Modal -->
-      <div class="confirmation-card hidden" id="confirmation-card">
-        <div class="confirm-header">
-          <span class="confirm-icon">⚠️</span>
-          <strong>Confirm Sensitive Action</strong>
-        </div>
-        <p id="confirmation-msg">The agent planned a sensitive submission action. Do you authorize execution?</p>
-        <div class="confirm-actions">
-          <button id="confirm-cancel-btn" class="btn-cancel">Cancel</button>
-          <button id="confirm-proceed-btn" class="btn-confirm">Proceed & Execute</button>
-        </div>
-      </div>
-    </main>
-
-    <!-- TAB 2: Live Shield & Scanner -->
-    <section class="tab-content" id="tab-live-shield">
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 1: LIVE SHIELD & SCANNER (1:1 with Screenshot)                  -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <section class="tab-content active" id="tab-live-shield">
+      <!-- Action Buttons Row -->
       <div class="action-buttons-row">
         <button id="scan-now-btn" class="primary-action-btn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          Scan & Shield Screen
+          Scan &amp; Shield Screen
         </button>
         <button id="save-vault-btn" class="secondary-action-btn" title="Store detected sensitive records in local browser storage">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
           </svg>
@@ -193,79 +142,89 @@
         </button>
       </div>
 
-      <!-- Shield Visual Mask Style -->
+      <!-- Screen Mask Technique -->
       <div class="section-group">
         <div class="section-header-flex">
-          <label class="section-label">Screen Mask Technique</label>
+          <label class="section-label">SCREEN MASK TECHNIQUE</label>
           <span class="section-hint">Select how data is hidden on screen</span>
         </div>
         <div class="mode-chips">
-          <button class="chip active" data-mode="blackout" title="100% Solid Opaque Blackout - Impenetrable to AI Vision & OCR">
-            <span class="chip-icon">⬛</span> Blackout
+          <button class="chip" data-mode="blackout" title="100% Solid Opaque Blackout">
+            <span class="chip-icon">⬛</span>
+            <span>Blackout</span>
           </button>
-          <button class="chip" data-mode="blur" title="Heavy Gaussian Blur Filter">
-            <span class="chip-icon">💧</span> Deep Blur
+          <button class="chip active" data-mode="blur" title="Heavy Gaussian Blur Filter">
+            <span class="chip-icon">💧</span>
+            <span>Deep Blur</span>
           </button>
           <button class="chip" data-mode="pixelate" title="Heavy Mosaic Pixel Block">
-            <span class="chip-icon">🔲</span> Pixelate
+            <span class="chip-icon">🟪</span>
+            <span>Pixelate</span>
           </button>
           <button class="chip" data-mode="semantic" title="Synthetic Token Badge Replacement">
-            <span class="chip-icon">🏷️</span> Semantic
+            <span class="chip-icon">🏷️</span>
+            <span>Semantic</span>
           </button>
         </div>
       </div>
 
-      <!-- Real-Time Detection Breakdown -->
+      <!-- Detected Sensitive Items On Screen (3x2 Grid) -->
       <div class="telemetry-panel">
         <div class="panel-header">
-          <span>Detected Sensitive Items on Screen</span>
-          <span class="live-status-dot" id="scan-feedback-text">Live Protected</span>
+          <span>DETECTED SENSITIVE ITEMS ON SCREEN</span>
+          <span class="live-status-dot paused" id="scan-feedback-text">PROTECTION PAUSED</span>
         </div>
         <div class="metrics-grid">
+          <!-- Cards & CVV -->
           <div class="metric-card card-cards">
             <div class="metric-top">
               <span class="metric-icon">💳</span>
-              <span class="metric-num" id="stat-cards">0</span>
+              <span class="metric-num red" id="stat-cards">0</span>
             </div>
-            <span class="metric-name">Cards & CVV</span>
+            <span class="metric-name">Cards &amp; CVV</span>
           </div>
 
+          <!-- Passwords & Keys -->
           <div class="metric-card card-pwd">
             <div class="metric-top">
               <span class="metric-icon">🔑</span>
-              <span class="metric-num" id="stat-passwords">0</span>
+              <span class="metric-num green" id="stat-passwords">0</span>
             </div>
-            <span class="metric-name">Passwords & Keys</span>
+            <span class="metric-name">Passwords &amp; Keys</span>
           </div>
 
+          <!-- Emails -->
           <div class="metric-card card-emails">
             <div class="metric-top">
               <span class="metric-icon">✉️</span>
-              <span class="metric-num" id="stat-emails">0</span>
+              <span class="metric-num purple" id="stat-emails">0</span>
             </div>
             <span class="metric-name">Emails</span>
           </div>
 
+          <!-- Phone Numbers -->
           <div class="metric-card card-phones">
             <div class="metric-top">
               <span class="metric-icon">📞</span>
-              <span class="metric-num" id="stat-phones">0</span>
+              <span class="metric-num pink" id="stat-phones">0</span>
             </div>
             <span class="metric-name">Phone Numbers</span>
           </div>
 
+          <!-- SSN / Aadhaar / ID -->
           <div class="metric-card card-ssn">
             <div class="metric-top">
               <span class="metric-icon">🪪</span>
-              <span class="metric-num" id="stat-ssn">0</span>
+              <span class="metric-num cyan" id="stat-ssn">0</span>
             </div>
             <span class="metric-name">SSN / Aadhaar / ID</span>
           </div>
 
+          <!-- Detected Faces -->
           <div class="metric-card card-faces">
             <div class="metric-top">
               <span class="metric-icon">👤</span>
-              <span class="metric-num" id="stat-faces">0</span>
+              <span class="metric-num violet" id="stat-faces">0</span>
             </div>
             <span class="metric-name">Detected Faces</span>
           </div>
@@ -273,15 +232,17 @@
       </div>
     </section>
 
-    <!-- TAB 3: Local Browser Vault -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 2: LOCAL BROWSER VAULT                                          -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <section class="tab-content" id="tab-local-vault">
       <div class="vault-header-card">
         <div class="vault-info">
           <div class="vault-title-row">
             <h3>Local Browser Storage Vault</h3>
-            <span class="storage-tag">IndexedDB Vault</span>
+            <span class="storage-tag">chrome.storage.local</span>
           </div>
-          <p class="vault-desc">All detected records are stored strictly in your browser's IndexedDB local sandbox. Zero cloud storage or external API access.</p>
+          <p class="vault-desc">All detected records are stored strictly in your browser's sandbox. Zero cloud leakage.</p>
         </div>
         <div class="vault-action-row">
           <button id="export-vault-btn" class="vault-btn btn-export" title="Export local vault to JSON">
@@ -302,70 +263,192 @@
         </div>
       </div>
 
-      <!-- Vault Search & Filter -->
       <div class="vault-filter-bar">
-        <input type="text" id="vault-search-input" placeholder="Search local vault records..." />
-        <select id="vault-category-filter">
+        <input type="text" id="vault-search-input" class="vault-search" placeholder="Search saved records...">
+        <select id="vault-category-filter" class="vault-filter-select">
           <option value="all">All Categories</option>
-          <option value="creditCard">Credit Cards</option>
-          <option value="password">Passwords / Keys</option>
+          <option value="card">Cards</option>
+          <option value="password">Passwords</option>
           <option value="email">Emails</option>
           <option value="phone">Phones</option>
-          <option value="ssn">SSN / Aadhaar</option>
+          <option value="ssn">IDs / SSN</option>
           <option value="face">Faces</option>
         </select>
       </div>
 
-      <!-- Vault Items List -->
-      <div class="vault-records-list" id="vault-records-list">
-        <div class="vault-empty-state" id="vault-empty-state">
-          <span class="empty-icon">📂</span>
-          <p>No sensitive records stored in local browser yet.</p>
-          <small>Click "Scan & Shield Screen" on any page with forms or credentials to populate.</small>
-        </div>
-      </div>
+      <div id="vault-records-list" class="vault-list"></div>
+      <div id="vault-empty-state" class="vault-empty">No sensitive records secured yet. Click "Save to Vault" on Live Shield.</div>
     </section>
 
-    <!-- TAB 4: Audit & Logs -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 3: AUDIT & EVENT LOG                                            -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <section class="tab-content" id="tab-audit-log">
-      <div class="security-guarantee-card">
-        <div class="card-title">Security & Zero-Leakage Checklist</div>
-        <div class="checklist-grid">
-          <div class="check-item verified">
-            <span class="check-icon">✓</span>
-            <span>Raw Screen Capture Masked from AI</span>
-          </div>
-          <div class="check-item verified">
-            <span class="check-icon">✓</span>
-            <span>DOM Text Cloaked (Zero Crawler Leaks)</span>
-          </div>
-          <div class="check-item verified">
-            <span class="check-icon">✓</span>
-            <span>100% Client-Side Local Regex & OCR</span>
-          </div>
-          <div class="check-item verified">
-            <span class="check-icon">✓</span>
-            <span>Storage Restricted to chrome.storage.local</span>
-          </div>
-        </div>
+      <div class="audit-header">
+        <span>SECURITY &amp; SHIELD EVENT LOG</span>
+        <button id="clear-logs-btn" class="vault-btn">Clear Log</button>
       </div>
-
-      <div class="log-section">
-        <div class="log-header">
-          <span>Live Protection Event Log</span>
-          <button id="clear-logs-btn" class="text-btn">Clear Logs</button>
-        </div>
-        <div class="log-feed" id="log-feed">
-          <div class="log-item ready">
-            <span class="log-time">Now</span>
-            <span class="log-msg">Screen Privacy Guard active. AI agent screen shield engaged.</span>
-          </div>
-        </div>
+      <div id="log-feed" class="audit-log-feed">
+        <div class="log-item info">Shield initialized in local privacy mode. Zero external transmission.</div>
       </div>
     </section>
-  </div>
 
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 4: CLEAN AI DIRECTIVES (NO BOT)                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <section class="tab-content" id="tab-ai-agent">
+      <div class="agent-clean-container">
+
+        <!-- API Key Expiry / Missing Alert Banner -->
+        <div id="api-key-alert-banner" class="api-key-alert-banner hidden">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-text" id="api-key-alert-text">Gemini API Key missing or expired!</span>
+          <button id="btn-fix-api-key" class="alert-btn">Configure Key</button>
+        </div>
+
+        <!-- Activity & Conversation Log -->
+        <div class="clean-section activity-section">
+          <div class="section-tag-row">
+            <span class="section-tag">▸ ACTIVITY &amp; DIRECTIVE CONSOLE</span>
+            <button class="mini-clear-btn" id="btn-clear-activity">Clear</button>
+          </div>
+          <div class="activity-log-feed" id="activity-log-feed">
+            <div class="log-row sys">SYS: SecureVision AI Console online. Zero-leak client privacy active.</div>
+            <div class="log-row ai" id="initial-ai-greeting">AI: System ready. Send any query or screen directive in Hindi or English.</div>
+          </div>
+        </div>
+
+        <!-- Command Input -->
+        <div class="clean-section input-section">
+          <div class="section-tag-row">
+            <span class="section-tag">▸ DIRECTIVE INPUT</span>
+            <span class="tag-hint">↵ Enter to send</span>
+          </div>
+
+          <div class="command-input-row">
+            <!-- Voice STT Mic Button inside input row -->
+            <button id="btn-voice-input-mic" class="hud-mic-btn" title="Speak directive in Hindi or English">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+            </button>
+            <input type="text" id="command-input-field" class="hud-input-text" placeholder="Type or speak in Hindi or English…">
+            <button id="btn-send-command" class="hud-send-btn" title="Send Directive">▸</button>
+          </div>
+
+          <!-- Quick Directive Chips -->
+          <div class="directive-chips-row">
+            <button class="d-chip" data-cmd="System status and hardware health">📊 Status</button>
+            <button class="d-chip" data-cmd="Show my notes">📝 Notes</button>
+            <button class="d-chip" data-cmd="Summarize this active page">📑 Page Summary</button>
+            <button class="d-chip" data-cmd="Audit active screen for privacy leaks">🛡️ Shield Audit</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="right-action-buttons">
+          <button id="btn-interrupt" class="action-btn-interrupt">
+            🔥  INTERRUPT  [ESC]
+          </button>
+          <button id="btn-mic-toggle" class="action-btn-mic muted">
+            🎤  MICROPHONE MUTED
+          </button>
+        </div>
+
+      </div><!-- /agent-clean-container -->
+    </section><!-- /tab-ai-agent -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 5: SETTINGS & DEPLOYMENT CONFIG                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <section class="tab-content" id="tab-settings">
+      <div class="settings-container">
+
+        <!-- 1. Google Gemini API Key Card -->
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <span class="settings-title">🔑 Google Gemini API Key</span>
+            <span class="settings-badge" id="key-status-badge">Checking...</span>
+          </div>
+          <p class="settings-desc">Enter your Google Gemini API key. Agar key expire ho jaye ya invalid ho, aap yahan nayi key paste karke direct save aur validate kar sakte hain.</p>
+          
+          <div class="settings-input-group">
+            <div class="input-password-wrapper">
+              <input type="password" id="input-gemini-key" class="settings-input" placeholder="AIzaSy... / AQ.Ab... (Paste Gemini API Key)">
+              <button id="toggle-key-visibility-btn" class="toggle-eye-btn" title="Show / Hide Key">👁️</button>
+            </div>
+            <button id="btn-save-api-key" class="primary-action-btn btn-save-key">
+              <span>Save &amp; Test Key</span>
+            </button>
+          </div>
+          <div id="key-validation-feedback" class="validation-feedback"></div>
+          <div class="key-help-row">
+            <span>💡 Note: Google Gemini API key <code>AIzaSy...</code> ya <code>AQ.Ab...</code> se start hoti hai.</span>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="key-help-link">🔗 Google AI Studio se Free Gemini Key banayein (aistudio.google.com) ↗</a>
+          </div>
+        </div>
+
+        <!-- 2. AI Assistant Name Customization -->
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <span class="settings-title">🏷️ AI Assistant Name</span>
+            <span class="current-name-tag" id="current-name-display">SecureVision AI</span>
+          </div>
+          <p class="settings-desc">Apne AI Assistant ka name customize karein (jaise: 'SecureVision AI', 'JARVIS', 'Nova', etc.)</p>
+          
+          <div class="settings-input-group">
+            <input type="text" id="input-assistant-name" class="settings-input" placeholder="Enter Assistant Name (e.g. SecureVision AI)">
+            <button id="btn-save-assistant-name" class="secondary-action-btn btn-save-name">
+              Save Name
+            </button>
+          </div>
+          <div id="name-save-feedback" class="validation-feedback"></div>
+        </div>
+
+        <!-- 3. Deployed Backend Server URL -->
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <span class="settings-title">🌐 Backend Server URL</span>
+            <span class="server-status-tag" id="server-status-display">Offline</span>
+          </div>
+          <p class="settings-desc">Local development ke liye 'http://127.0.0.1:8000' ya deploy hone ke baad apna Cloud URL enter karein (Render, Railway, Cloud Run).</p>
+          
+          <div class="settings-input-group">
+            <input type="text" id="input-backend-url" class="settings-input" placeholder="http://127.0.0.1:8000">
+            <button id="btn-save-backend-url" class="secondary-action-btn btn-save-url">
+              Connect Server
+            </button>
+          </div>
+          <div id="server-connection-feedback" class="validation-feedback"></div>
+        </div>
+
+      </div><!-- /settings-container -->
+    </section><!-- /tab-settings -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 5. FOOTER BAR                                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <footer class="hud-footer">
+      <div class="footer-left">
+        <span class="hotkey-hint">[F4] Mute</span>
+        <span class="footer-dot">•</span>
+        <span class="hotkey-hint">[ESC] Interrupt</span>
+        <span class="footer-dot">•</span>
+        <span class="hotkey-hint" id="footer-fullscreen-btn">[F11] Fullscreen</span>
+      </div>
+      <div class="footer-right">
+        <span class="conversational-tag">VOICE: HINDI • ENGLISH</span>
+      </div>
+    </footer>
+
+  </div><!-- /hud-window -->
+
+  <!-- IndexedDB Persistent Vault Engine -->
   <script src="storage/indexeddb-vault.js"></script>
+  <!-- Main Controller -->
   <script src="popup.js"></script>
 </body>
 </html>

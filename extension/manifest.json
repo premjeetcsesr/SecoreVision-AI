@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Screen Privacy Guard - AI Sensitive Data Shield",
-  "version": "1.0.0",
-  "description": "Detects sensitive data on screen, stores data securely in local browser storage, and blocks AI agents from reading sensitive data from the entire screen.",
+  "name": "SecureVision AI — Privacy Shield & Agent",
+  "version": "2.0.0",
+  "description": "Autonomous AI Agent HUD, real-time Gemini directives, system telemetry, and on-screen privacy shield.",
   "permissions": [
     "activeTab",
     "scripting",

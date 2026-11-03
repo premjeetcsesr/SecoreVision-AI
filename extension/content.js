@@ -535,6 +535,7 @@
 
   /**
    * Save all currently detected sensitive items to Browser Local Storage (chrome.storage.local / localStorage)
+   * Strictly filters duplicates by (category + masked value + domain).
    */
   async function storeDetectedDataLocally() {
     if (!detectedEntities || detectedEntities.length === 0) {
@@ -545,20 +546,43 @@
     const currentDomain = window.location.hostname || 'local';
     const now = new Date().toISOString();
 
-    const vaultRecords = detectedEntities.map((ent, idx) => {
-      const raw = ent.rawText || (ent.element ? (ent.element.value || ent.element.innerText) : '') || '';
-      const masked = piiDetector.maskValue(raw, ent.category);
+    // Deduplicate entities found on the active page itself
+    const seenOnPage = new Set();
+    const vaultRecords = [];
 
-      return {
-        id: `vault_${Date.now()}_${idx}`,
+    detectedEntities.forEach((ent) => {
+      const raw = ent.rawText || (ent.element ? (ent.element.value || ent.element.innerText) : '') || '';
+      const masked = piiDetector.maskValue(raw, ent.category) || '••••••••';
+      const cat = (ent.category || 'other').toLowerCase();
+      const dedupeKey = `${cat}|${masked.toLowerCase().replace(/[^a-z0-9]/g, '_')}|${currentDomain.toLowerCase()}`;
+
+      if (seenOnPage.has(dedupeKey)) return;
+      seenOnPage.add(dedupeKey);
+
+      // Deterministic ID so multiple scans/puts on the same entity replace rather than duplicate
+      let deterministicId;
+      if (typeof window !== 'undefined' && window.PrivacyShieldDB && window.PrivacyShieldDB.getCanonicalVaultId) {
+        deterministicId = window.PrivacyShieldDB.getCanonicalVaultId({
+          category: cat,
+          masked: masked,
+          domain: currentDomain
+        });
+      } else {
+        const cleanMask = masked.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'masked';
+        const cleanDom = currentDomain.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'local';
+        deterministicId = `vault_${cat}_${cleanMask}_${cleanDom}`;
+      }
+
+      vaultRecords.push({
+        id: deterministicId,
         category: ent.category || 'other',
         masked: masked,
-        token: ent.sanitizedToken || `[PROTECTED_${(ent.category || 'PII').toUpperCase()}_${idx + 1}]`,
+        token: ent.sanitizedToken || `[PROTECTED_${(ent.category || 'PII').toUpperCase()}]`,
         domain: currentDomain,
         url: currentUrl,
         detectedAt: now,
         shieldStyle: shieldStyle
-      };
+      });
     });
 
     try {
@@ -566,28 +590,52 @@
       if (typeof window !== 'undefined' && window.PrivacyShieldDB) {
         try {
           await window.PrivacyShieldDB.saveVaultRecordsBatch(vaultRecords);
-          await window.PrivacyShieldDB.addAuditLog({
-            action: 'SHIELD_SCAN',
-            message: `Scanned and protected ${vaultRecords.length} sensitive items`,
-            category: 'vault',
-            domain: currentDomain,
-            url: currentUrl,
-            itemsCount: vaultRecords.length,
-            categoriesBreakdown: piiDetector.counters
-          });
+          if (vaultRecords.length > 0) {
+            await window.PrivacyShieldDB.addAuditLog({
+              action: 'SHIELD_SCAN',
+              message: `Scanned and protected ${vaultRecords.length} unique sensitive items`,
+              category: 'vault',
+              domain: currentDomain,
+              url: currentUrl,
+              itemsCount: vaultRecords.length,
+              categoriesBreakdown: piiDetector.counters
+            });
+          }
         } catch (idbErr) {
           console.debug('[Screen Privacy Guard] IndexedDB write note:', idbErr);
         }
       }
 
-      // 2. Extension Local Storage & backup
+      // 2. Extension Local Storage with strict de-duplication
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-        const stored = await chrome.storage.local.get(['privacy_vault_records']);
-        const existingRecords = stored.privacy_vault_records || [];
-        const uniqueNew = vaultRecords.filter(n => !existingRecords.some(e => e.category === n.category && e.masked === n.masked && e.domain === n.domain));
-        const updated = [...uniqueNew, ...existingRecords].slice(0, 500);
+        const stored = await chrome.storage.local.get(['privacy_vault_records', 'screen_vault_records']);
+        const existingRecords = Array.isArray(stored.privacy_vault_records) ? stored.privacy_vault_records : 
+                              (Array.isArray(stored.screen_vault_records) ? stored.screen_vault_records : []);
+        
+        // Clean and deduplicate existing records first
+        const seenStorage = new Set();
+        const cleanExisting = [];
+        existingRecords.forEach(e => {
+          if (!e) return;
+          const k = `${(e.category || 'other').toLowerCase()}|${e.masked || e.token || ''}|${(e.domain || '').toLowerCase()}`;
+          if (!seenStorage.has(k)) {
+            seenStorage.add(k);
+            cleanExisting.push(e);
+          }
+        });
+
+        // Filter out any records that already exist in storage
+        const uniqueNew = vaultRecords.filter(n => {
+          const k = `${(n.category || 'other').toLowerCase()}|${n.masked || n.token || ''}|${(n.domain || '').toLowerCase()}`;
+          if (seenStorage.has(k)) return false;
+          seenStorage.add(k);
+          return true;
+        });
+
+        const updated = [...uniqueNew, ...cleanExisting].slice(0, 500);
         await chrome.storage.local.set({
           privacy_vault_records: updated,
+          screen_vault_records: updated,
           screen_shield_last_scan: {
             totalEntities: detectedEntities.length,
             categories: piiDetector.counters,
@@ -596,21 +644,24 @@
             url: currentUrl
           }
         });
+        return { success: true, count: uniqueNew.length, items: updated };
       }
 
-      // Dual-write to window.localStorage as resilient sandbox backup
+      // Dual-write to window.localStorage as resilient backup
       try {
         const raw = localStorage.getItem('privacy_vault_records');
         const existingRecords = raw ? JSON.parse(raw) : [];
-        const uniqueNew = vaultRecords.filter(n => !existingRecords.some(e => e.category === n.category && e.masked === n.masked && e.domain === n.domain));
+        const seenStorage = new Set(existingRecords.map(e => `${(e.category || 'other').toLowerCase()}|${e.masked || e.token || ''}|${(e.domain || '').toLowerCase()}`));
+        const uniqueNew = vaultRecords.filter(n => !seenStorage.has(`${(n.category || 'other').toLowerCase()}|${n.masked || n.token || ''}|${(n.domain || '').toLowerCase()}`));
         const updated = [...uniqueNew, ...existingRecords].slice(0, 500);
         localStorage.setItem('privacy_vault_records', JSON.stringify(updated));
-      } catch (e2) {}
-    } catch (e) {
-      console.warn('[Screen Privacy Guard] Storage write warning:', e);
-    }
+      } catch (_) {}
 
-    return { success: true, count: vaultRecords.length, items: vaultRecords };
+      return { success: true, count: vaultRecords.length, items: vaultRecords };
+    } catch (err) {
+      console.error('[Screen Privacy Guard] storeDetectedDataLocally error:', err);
+      return { success: false, count: 0, error: err.message };
+    }
   }
 
   /**
@@ -834,6 +885,11 @@
     shieldStyle = style;
     isShieldActive = enabled;
 
+    // Run automatic deduplication on existing IndexedDB to keep storage clean of duplicates
+    if (typeof window !== 'undefined' && window.PrivacyShieldDB && window.PrivacyShieldDB.deduplicateVault) {
+      window.PrivacyShieldDB.deduplicateVault().catch(() => {});
+    }
+
     // ONLY scan and protect if user has explicitly turned it ON from the top!
     if (isShieldActive) {
       scanPageForSensitiveData();
@@ -875,29 +931,65 @@
   // Handle Extension Runtime Messages
   if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      switch (request.type) {
+      // Support both {type:'X'} and {action:'X'} message formats for cross-context compat
+      const _msgKey = request.type || request.action || '';
+      switch (_msgKey) {
+
+        case 'SHIELD_SCAN':
         case 'SCAN_PAGE_SENSITIVE_DATA': {
           (async () => {
             try {
-              isShieldActive = true;
-              if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-                await chrome.storage.local.set({ screen_shield_enabled: true });
-              }
               const entities = scanPageForSensitiveData();
-              await storeDetectedDataLocally();
+              const storeResult = await storeDetectedDataLocally();
+              // Build vault records to return directly to popup (strictly deduplicated)
+              const now = new Date().toISOString();
+              const nowTime = new Date().toLocaleTimeString();
+              const domain = window.location.hostname || 'local';
+
+              const seenScan = new Set();
+              const vaultRecords = [];
+
+              (entities || []).forEach((ent) => {
+                const raw = ent.rawText || (ent.element ? (ent.element.value || ent.element.innerText || '') : '') || '';
+                const masked = piiDetector.maskValue(raw, ent.category) || '••••••••';
+                const cat = (ent.category || 'other').toLowerCase();
+                const dedupeKey = `${cat}|${masked}|${domain.toLowerCase()}`;
+                if (seenScan.has(dedupeKey)) return;
+                seenScan.add(dedupeKey);
+
+                const catLabel = cat.replace(/([A-Z])/g, ' $1').trim();
+                const deterministicId = `vault_${cat}_${masked.replace(/[^a-zA-Z0-9]/g, '_')}_${domain.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+                vaultRecords.push({
+                  id: deterministicId,
+                  category: ent.category || 'other',
+                  name: catLabel.charAt(0).toUpperCase() + catLabel.slice(1),
+                  masked: masked,
+                  token: ent.sanitizedToken || `[PROTECTED_${cat.toUpperCase()}]`,
+                  domain: domain,
+                  url: window.location.href,
+                  time: nowTime,
+                  date: now,
+                  detectedAt: now
+                });
+              });
               sendResponse({
                 success: true,
                 totalEntities: entities.length,
                 categories: piiDetector.counters,
-                isShieldActive: true,
+                metrics: piiDetector.counters,
+                vaultRecords: vaultRecords,
+                isShieldActive: isShieldActive,
                 shieldStyle: shieldStyle
               });
             } catch (err) {
-              sendResponse({ success: false, error: err.message, totalEntities: 0, categories: {} });
+              sendResponse({ success: false, error: err.message, totalEntities: 0, categories: {}, vaultRecords: [] });
             }
           })();
           return true;
         }
+
+
 
         case 'TOGGLE_SCREEN_SHIELD': {
           toggleScreenShield(request.active).then(res => {
@@ -916,6 +1008,42 @@
 
         case 'SAVE_TO_LOCAL_VAULT': {
           storeDetectedDataLocally().then(res => sendResponse(res));
+          return true;
+        }
+
+        case 'CLEAR_VAULT': {
+          (async () => {
+            try {
+              if (typeof window !== 'undefined' && window.PrivacyShieldDB) {
+                await window.PrivacyShieldDB.clearVault();
+              }
+              if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                await chrome.storage.local.set({ privacy_vault_records: [], screen_vault_records: [] });
+              }
+              try {
+                localStorage.removeItem('privacy_vault_records');
+                localStorage.removeItem('screen_vault_records');
+              } catch (_) {}
+              sendResponse({ success: true, message: 'Vault cleared across IndexedDB and local storage.' });
+            } catch (err) {
+              sendResponse({ success: false, error: err.message });
+            }
+          })();
+          return true;
+        }
+
+        case 'DEDUPLICATE_VAULT': {
+          (async () => {
+            try {
+              let result = { total: 0, removed: 0, kept: 0 };
+              if (typeof window !== 'undefined' && window.PrivacyShieldDB) {
+                result = await window.PrivacyShieldDB.deduplicateVault();
+              }
+              sendResponse({ success: true, result });
+            } catch (err) {
+              sendResponse({ success: false, error: err.message });
+            }
+          })();
           return true;
         }
 
@@ -1003,33 +1131,98 @@
           return true;
         }
 
+        case 'EXTRACT_PAGE_SUMMARY_TEXT': {
+          const bodyText = (document.body ? document.body.innerText : '').trim().substring(0, 3000);
+          sendResponse({ success: true, text: bodyText, title: document.title, url: window.location.href });
+          return true;
+        }
+
         case 'EXECUTE_ACTION': {
           const action = request.action || {};
-          let targetElement = null;
+          const actType = (action.action || 'click').toLowerCase();
 
+          // 1. Scroll action
+          if (actType === 'scroll') {
+            const dir = (action.value || action.direction || 'down').toLowerCase();
+            if (dir === 'top') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (dir === 'bottom') {
+              window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } else {
+              const amount = action.amount || (dir === 'up' ? -550 : 550);
+              window.scrollBy({ top: amount, behavior: 'smooth' });
+            }
+            sendResponse({ success: true, executed: true, action: 'scroll', direction: dir });
+            return true;
+          }
+
+          // 2. Scan buttons / clickable elements
+          if (actType === 'scan' || actType === 'scan_elements') {
+            const items = Array.from(document.querySelectorAll('button, a, input[type="submit"], input[type="button"], [role="button"]'))
+              .filter(el => {
+                const rect = el.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0 && rect.top < window.innerHeight && rect.bottom > 0;
+              })
+              .map(el => (el.innerText || el.value || el.getAttribute('aria-label') || '').trim())
+              .filter(t => t.length > 0 && t.length < 50);
+            const unique = [...new Set(items)].slice(0, 15);
+            sendResponse({ success: true, executed: true, elements: unique });
+            return true;
+          }
+
+          // 3. Locate target element for click or type
+          let targetElement = null;
           if (action.target_id) {
             targetElement = document.getElementById(action.target_id) || document.querySelector(`[data-shield-id="${action.target_id}"]`);
           }
-          if (!targetElement && action.target_text) {
-            const lower = action.target_text.toLowerCase();
-            const candidates = Array.from(document.querySelectorAll('button, a, input[type="submit"], input[type="button"], [role="button"]'));
-            targetElement = candidates.find(c => (c.innerText || c.value || '').toLowerCase().includes(lower));
+          if (!targetElement && action.target_selector) {
+            try { targetElement = document.querySelector(action.target_selector); } catch (e) {}
+          }
+          if (!targetElement && (action.target_text || action.target)) {
+            const searchVal = (action.target_text || action.target || '').toLowerCase().trim();
+            const candidates = Array.from(document.querySelectorAll('button, a, input, textarea, select, [role="button"], [tabindex]'));
+            targetElement = candidates.find(c => {
+              const text = (c.innerText || c.value || c.placeholder || c.getAttribute('aria-label') || '').toLowerCase();
+              return text.includes(searchVal);
+            });
           }
 
+          // 4. Type / Input action
+          if (actType === 'type' || actType === 'fill') {
+            const inputEl = targetElement || document.activeElement || document.querySelector('input:not([type="hidden"]), textarea');
+            if (inputEl && (inputEl.tagName === 'INPUT' || inputEl.tagName === 'TEXTAREA' || inputEl.isContentEditable)) {
+              inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              inputEl.focus();
+              const textToType = action.value || action.text || '';
+              if (inputEl.isContentEditable) {
+                inputEl.innerText = textToType;
+              } else {
+                inputEl.value = textToType;
+              }
+              inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+              inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+              showToast(`🎯 JARVIS typed: "${textToType}"`);
+              sendResponse({ success: true, executed: true, action: 'type', value: textToType });
+              return true;
+            }
+          }
+
+          // 5. Click action
           if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             targetElement.classList.add('privacy-agent-highlight');
             setTimeout(() => targetElement.classList.remove('privacy-agent-highlight'), 2200);
 
-            if (action.action === 'click') {
-              try {
-                targetElement.click();
-              } catch (e) {
-                console.warn('Click execution warning:', e);
-              }
+            try {
+              targetElement.focus();
+              targetElement.click();
+              showToast(`🎯 JARVIS clicked: "${(targetElement.innerText || targetElement.value || action.target || 'target').substring(0, 30)}"`);
+            } catch (e) {
+              console.warn('[JARVIS] Click warning:', e);
             }
-            sendResponse({ success: true, executed: true, target: action.target_id || action.target_text });
+            sendResponse({ success: true, executed: true, target: action.target_id || action.target_text || action.target });
           } else {
-            sendResponse({ success: false, executed: false, error: 'Target element not found on page' });
+            sendResponse({ success: false, executed: false, error: `Target element '${action.target || action.target_text}' not found on page` });
           }
           return true;
         }

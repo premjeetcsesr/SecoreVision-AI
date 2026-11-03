@@ -1,74 +1,78 @@
-# 🛡️ SecureVision AI — Privacy Shield & AI Vision Agent
+# 🛡️ SecureVision AI — Privacy Shield & Deployable Vision Agent
 
-> **Ek Aisa Smart AI Screen Shield jo aapke computer screen se koi bhi private data (Cards, Passwords, Emails, Phone Numbers, Photos) leak hone se rokkta hai aur screen par real-time blur/blackout karke 100% privacy deta hai!**
+> **An intelligent, on-screen privacy shield that prevents sensitive personal data (credit cards, passwords, emails, phone numbers, faces) from leaking to AI models and screen grabbers, applying real-time visual masks with 100% client-side privacy.**
 
 ---
 
-## 📸 Screenshots Overview (Yahan Apne Screenshots Dalein)
+## 📸 Screenshots Overview (Place Your Screenshots Here)
 
-Aap apne extension ke screenshots lekar `screenshots/` folder me dal sakte hain. Har section ke liye niche jagah banayi gayi hai:
+You can save your screenshots inside the `screenshots/` directory. Each section in this guide includes a dedicated placeholder:
 
 | Feature / Screen | Screenshot Placeholder |
 | :--- | :--- |
-| **1. Extension Master Dashboard** | `![Extension HUD Dashboard](screenshots/1-dashboard-live-shield.png)` |
-| **2. Screen Masking (Blur / Blackout Live)** | `![Screen Masking In Action](screenshots/2-screen-masking-live.png)` |
-| **3. Local Browser Vault** | `![Local Vault Records](screenshots/3-local-vault.png)` |
-| **4. AI Directives & Voice Chat (Hindi/English)** | `![AI Directives Console](screenshots/4-ai-directives-console.png)` |
-| **5. Settings & Free Gemini API Key** | `![Settings & API Key Validation](screenshots/5-settings-api-key.png)` |
-| **6. Backend Server Running** | `![Backend Server Terminal](screenshots/6-backend-terminal.png)` |
+| **1. Master Extension Dashboard** | `![Extension HUD Dashboard](screenshots/1-dashboard-live-shield.png)` |
+| **2. Live Screen Masking (Blur / Blackout)** | `![Screen Masking In Action](screenshots/2-screen-masking-live.png)` |
+| **3. Local Browser Vault (Encrypted Sandbox)** | `![Local Vault Records](screenshots/3-local-vault.png)` |
+| **4. AI Directives & Voice Chat Console** | `![AI Directives Console](screenshots/4-ai-directives-console.png)` |
+| **5. Settings & Live Gemini API Key Validation** | `![Settings & API Key Validation](screenshots/5-settings-api-key.png)` |
+| **6. Backend Server Terminal** | `![Backend Server Terminal](screenshots/6-backend-terminal.png)` |
 
 ---
 
-## 🌟 SecureVision AI Kya Hai? (Non-Technical Explanation)
+## 🌟 What is SecureVision AI? (Explained for Everyone)
 
-Aam taur par jab hum AI tools (jaise ChatGPT, Claude ya automated agents) ko apni screen dikhate hain, toh hamari screen par dikhne wali sensitive cheezein jaise:
-- 💳 **Credit/Debit Card numbers aur CVV**
-- 🔑 **Passwords, Secret API Keys aur Login Tokens**
-- ✉️ **Personal Email addresses**
-- 📞 **Mobile/WhatsApp numbers**
-- 🪪 **Aadhaar, PAN Card, SSN aur Identity numbers**
-- 👤 **Chehre (Faces) aur Profile Photos**
+When we share our screen or use modern AI desktop agents (like ChatGPT screen readers, automated crawlers, or vision models), our open browser tabs often contain sensitive personal information:
 
-Yeh sab information AI ke cloud servers par chali jati hai, jisse data leak hone ka khatra hota hai.
+- 💳 **Credit & Debit Card Numbers, Expiry Dates, and CVV Codes**
+- 🔑 **Passwords, Secret API Keys, and Authentication Tokens**
+- ✉️ **Personal and Business Email Addresses**
+- 📞 **Mobile Phone & WhatsApp Numbers**
+- 🪪 **National ID Numbers (SSN, Aadhaar, PAN Cards, Passports)**
+- 👤 **Human Faces, Avatars, and User Profile Pictures**
 
-### 🛡️ SecureVision AI Aapko Kaise Protect Karta Hai?
+If this information is sent across the internet to AI vision servers, personal data can be intercepted, logged, or permanently stored in external databases.
 
-1. **Client-Side Protection (Pehle Parda, Phir AI)**:  
-   Jaise hi aap kisi website par jate hain, SecureVision AI aapke browser ke andar hi sensitive data ko dhoondh leta hai.
-2. **Screen Par Mask / Parda Lagana**:  
-   Aapki screen par sensitive data par turant **Blackout (Kala parda)**, **Deep Blur (Dhundhla)**, ya **Pixelate (Mosaic)** lag jata hai. Agar koi screen record kare ya AI screen dekhe, toh use asli data kabhi nahi dikhta!
-3. **Zero Data Leakage (100% Safe)**:  
-   Koi bhi sensitive data kisi bhi company ke server par nahi bheja jata. Asli data sirf aapke browser ki safe tijori (**Local Sandbox Vault**) me rehta hai.
-4. **Bilingual AI Assistant (Hindi + English)**:  
-   Aap AI se bolkar (Voice) ya type karke Hindi ya English me baat kar sakte hain, page ka summary le sakte hain, ya notes save kar sakte hain!
+### 🛡️ How SecureVision AI Protects You
+
+1. **Client-Side First (Privacy Before AI)**:  
+   Before any webpage image or text is shared with an AI agent, SecureVision AI inspects the webpage locally inside your browser.
+2. **Physical On-Screen Masking**:  
+   The extension places impenetrable physical shields (**Blackout, Deep Blur, Pixelate, or Synthetic Tokens**) directly on top of sensitive screen areas. If an AI takes a screenshot or records your screen, it only sees the blurred/blacked-out mask—never your real private data.
+3. **Zero Data Leakage (100% Local)**:  
+   Your unmasked personal information is never uploaded to any cloud server or company database.
+4. **Local Browser Vault**:  
+   Detected items are stored strictly inside your browser's secure sandbox (**IndexedDB**). Only you have access, and you can export or clear this data at any time.
+5. **Bilingual Conversational AI Assistant**:  
+   Includes a built-in voice and text agent that communicates in both **English and Hindi** with a realistic male voice, summaries of webpages, and offline memory notes.
 
 ---
 
-## 📑 Table of Contents (Index)
+## 📑 Table of Contents
 
-1. [Quick Start — 2 Minute Setup Guide (Shuru Kaise Karein)](#-quick-start--2-minute-setup-guide)
-2. [Chrome Extension Kaise Install Karein (Step-by-Step)](#-chrome-extension-kaise-install-karein)
-3. [Extension ke Features aur Unka Use](#-extension-ke-features-aur-unka-use)
+1. [Quick Start — 2-Minute Setup Guide](#-quick-start--2-minute-setup-guide)
+2. [How to Install the Chrome Extension (Step-by-Step)](#-how-to-install-the-chrome-extension)
+3. [Extension Features & User Guide](#-extension-features--user-guide)
    - [Tab 1: Live Shield & Screen Scanner](#1-live-shield--screen-scanner)
-   - [Tab 2: Local Browser Vault](#2-local-browser-vault-surakshit-tijori)
+   - [Tab 2: Local Browser Vault (Zero-Leak Sandbox)](#2-local-browser-vault-zero-leak-sandbox)
    - [Tab 3: Security & Audit Log](#3-security--audit-log)
-   - [Tab 4: AI Directives & Voice Chat (Hindi + English)](#4-ai-directives--voice-chat-hindi--english)
-   - [Tab 5: Settings, API Key & Assistant Name](#5-settings-api-key--assistant-name)
-4. [Free Google Gemini API Key Kaise Banayein (1-Minute)](#-free-google-gemini-api-key-kaise-banayein)
-5. [Backend Ko Cloud Par Kaise Deploy Karein (Render / Docker / VPS)](#-cloud-deployment-guide)
-6. [Folder Structure (Files ki jaankari)](#-folder-structure)
-7. [Troubleshooting & FAQs (Agar koi dikkat aaye)](#-troubleshooting--faqs)
+   - [Tab 4: AI Directives & Voice Chat Console](#4-ai-directives--voice-chat-console)
+   - [Tab 5: Settings, API Key & Assistant Customization](#5-settings-api-key--assistant-customization)
+4. [How to Get a Free Google Gemini API Key](#-how-to-get-a-free-google-gemini-api-key)
+5. [Cloud Deployment Guide (Render, Railway, Docker, VPS)](#-cloud-deployment-guide)
+6. [Folder Structure (Clean Architecture)](#-folder-structure)
+7. [Troubleshooting & Frequently Asked Questions (FAQs)](#-troubleshooting--faqs)
 
 ---
 
-## 🚀 Quick Start — 2 Minute Setup Guide
+## 🚀 Quick Start — 2-Minute Setup Guide
 
-Kisi bhi technical coding ki zaroorat nahi hai. Bas yeh 2 aasan steps follow karein:
+No complex programming or advanced setup required. Just follow these two simple steps:
 
-### Step 1: Backend Server Chalu Karein (1-Click)
+### Step 1: Start the Backend Server (1-Click)
 
-1. Is folder me **`Run_Backend.bat`** file par double click karein.
-2. Ek black window (command prompt) khulegi aur likha aayega:
+1. Navigate to this project folder.
+2. Double-click the **`Run_Backend.bat`** file.
+3. A terminal window will open with the following message:
    ```text
    ========================================================
      SecureVision AI - Production Deployable Backend
@@ -76,180 +80,180 @@ Kisi bhi technical coding ki zaroorat nahi hai. Bas yeh 2 aasan steps follow kar
    Starting server on http://127.0.0.1:8000 ...
    Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
    ```
-3. Bas! Aapka backend chal gaya. Is window ko band mat karein, minimize kar dein.
+4. Keep this terminal window open in the background (you can minimize it).
 
 > 📷 **Screenshot Placeholder 1 (Backend Terminal):**  
 > `![Backend Server Terminal Running](screenshots/6-backend-terminal.png)`  
-> *(Yahan `Run_Backend.bat` chalne ke baad ki terminal window ka screenshot dalein)*
+> *(Insert a screenshot of the terminal window after running `Run_Backend.bat`)*
 
 ---
 
-### Step 2: Chrome Extension Kaise Install Karein
+### Step 2: How to Install the Chrome Extension
 
-1. Apna **Google Chrome** browser kholein.
-2. Chrome ke URL bar me type karein:
+1. Open your **Google Chrome** browser.
+2. Type the following in your URL address bar:
    ```text
    chrome://extensions
    ```
-   aur **Enter** dabayein.
-3. Top-Right corner me **"Developer mode"** ka switch hoga, use **ON** kar dein.
-4. Top-Left corner me **"Load unpacked"** button par click karein.
-5. Apne project ke andar se **`extension`** folder select karein aur **"Select Folder"** dabayein.
-6. Chrome me **"SecureVision AI — Privacy Shield & Agent"** card dikh jayega!
-7. Chrome ke top bar me jigsaw puzzle 🧩 icon par click karke SecureVision AI ko **Pin 📌** kar lein taaki wo hamesha samne rahe.
+   and press **Enter**.
+3. In the top-right corner, toggle the **"Developer mode"** switch to **ON**.
+4. In the top-left corner, click the **"Load unpacked"** button.
+5. In the file picker, select the **`extension`** folder from this project and click **Select Folder**.
+6. The **"SecureVision AI — Privacy Shield & Agent"** extension card will appear in your extensions list!
+7. Click the Chrome puzzle piece 🧩 icon in the top toolbar and **Pin 📌** SecureVision AI for easy 1-click access.
 
 > 📷 **Screenshot Placeholder 2 (Chrome Extensions Page):**  
 > `![Loading Extension in Chrome](screenshots/chrome-extensions-install.png)`  
-> *(Yahan `chrome://extensions` me "Load unpacked" karke extension dikhne ka screenshot dalein)*
+> *(Insert a screenshot of `chrome://extensions` showing Developer Mode ON and the loaded extension)*
 
 ---
 
-## 🎯 Extension ke Features aur Unka Use
+## 🎯 Extension Features & User Guide
 
-Extension icon par click karte hi aapke samne **SecureVision AI ka Modern Cyber HUD Window** khulega. Isme 5 aasan tabs hain:
+Click the SecureVision AI extension icon in your browser toolbar to open the **Cyber HUD Dashboard**. The extension is organized into 5 clean, intuitive tabs:
 
 ---
 
 ### 1. Live Shield & Screen Scanner
 
-Yeh aapka main privacy defense center hai!
+This is your main privacy defense hub.
 
 > 📷 **Screenshot Placeholder 3 (Live Shield HUD):**  
 > `![Live Shield Tab View](screenshots/1-dashboard-live-shield.png)`  
-> *(Yahan Live Shield tab ka screenshot dalein jisme toggle aur 6 cards dikhein)*
+> *(Insert a screenshot of the Live Shield tab showing the toggle switch and the 6 detection counters)*
 
-#### Main Buttons & Controls:
-1. **Master Privacy Shield Toggle (Switch)**:
-   - Is toggle ko **ON** karte hi screen protection chalu ho jata hai aur badge `ZERO LEAK ACTIVE ✓` green ho jata hai.
-   - Screen par toast message aata hai: `🛡️ Screen Shield ACTIVE`.
+#### Key Controls & Actions:
+1. **Master Screen Shield Toggle**:
+   - Turn this switch **ON** to activate active screen protection. The status badge will change to a green `ZERO LEAK ACTIVE ✓`.
+   - An in-page toast notification will confirm: `🛡️ Screen Shield ACTIVE`.
 2. **Scan & Shield Screen Button**:
-   - Is button par click karte hi extension active webpage ko turant scan karega.
-   - Agar Master Shield OFF tha, toh yeh use automatic ON karke sensitive data par parda laga dega!
-3. **Screen Mask Technique (Parda Lagane ke 4 Tarike)**:
-   - ⬛ **Blackout**: 100% Solid Black border parda jise AI ka camera ya OCR bilkul nahi padh sakta.
-   - 💧 **Deep Blur**: Smooth dhundhla parda jisse website dekhne me sundar lagti hai aur data chhip jata hai.
-   - 🟪 **Pixelate**: Retro mosaic style tiles jisse text gayab ho jata hai.
-   - 🏷️ **Semantic**: Asli data ki jagah fake token badges (e.g. `[PROTECTED_CARD]`, `[PROTECTED_EMAIL]`) dikhata hai.
-4. **Detected Sensitive Items (6 Live Cards)**:
-   - 💳 **Cards & CVV**: Bank credit/debit card numbers.
-   - 🔑 **Passwords & Keys**: Login passwords, API secret keys.
-   - ✉️ **Emails**: Personal/Work email addresses.
-   - 📞 **Phone Numbers**: Mobile aur WhatsApp numbers.
-   - 🪪 **SSN / Aadhaar / ID**: Government ID cards aur national identifiers.
-   - 👤 **Detected Faces**: Webpage par maujood user profile photos aur human faces.
+   - Performs a complete scan of the active viewport.
+   - If the Master Shield was turned off, clicking this button automatically turns the shield **ON** and immediately masks all detected sensitive data on screen.
+3. **Screen Mask Technique (4 Protection Styles)**:
+   - ⬛ **Blackout**: 100% opaque black shields that completely block AI vision models, OCR engines, and screen recorders.
+   - 💧 **Deep Blur**: Heavy Gaussian blur filter that cleanly obscures data while maintaining clean page readability.
+   - 🟪 **Pixelate**: Mosaic-style pixel blocks that obscure characters.
+   - 🏷️ **Semantic**: Replaces sensitive data with synthetic category tags (e.g., `[PROTECTED_CARD]`, `[PROTECTED_EMAIL]`).
+4. **Detected Sensitive Items Grid (6 Real-Time Counters)**:
+   - 💳 **Cards & CVV**: Credit card and payment card numbers.
+   - 🔑 **Passwords & Keys**: Passwords, API tokens, secret credentials.
+   - ✉️ **Emails**: Email addresses.
+   - 📞 **Phone Numbers**: Mobile telephone and WhatsApp numbers.
+   - 🪪 **SSN / Aadhaar / ID**: Government national identification numbers.
+   - 👤 **Detected Faces**: User profile photos, headshots, and faces.
 5. **Save to Vault Button**:
-   - Webpage par mile sensitive items ko bina internet par bheje aapke browser ke safe sandbox me save kar deta hai.
+   - Safely saves all detected items into your browser's private local vault without sending any data over the internet.
 
-> 📷 **Screenshot Placeholder 4 (Screen Par Blur / Blackout Masking):**  
-> `![Website Par Masking Live](screenshots/2-screen-masking-live.png)`  
-> *(Yahan kisi website par cards/phones par Blackout ya Blur laga hone ka screenshot dalein)*
+> 📷 **Screenshot Placeholder 4 (On-Screen Masking in Action):**  
+> `![Website Screen Masking Live](screenshots/2-screen-masking-live.png)`  
+> *(Insert a screenshot showing real webpage elements like cards or emails masked with Blackout or Blur)*
 
 ---
 
-### 2. Local Browser Vault (Surakshit Tijori)
+### 2. Local Browser Vault (Zero-Leak Sandbox)
 
-Aapka sara sensitive data kisi cloud server par nahi jata, balki aapke apne browser ki safe storage (**IndexedDB & chrome.storage.local**) me rehta hai.
+All detected sensitive records are stored strictly in your browser's private sandbox storage (**IndexedDB & chrome.storage.local**).
 
 > 📷 **Screenshot Placeholder 5 (Local Vault View):**  
 > `![Local Browser Storage Vault](screenshots/3-local-vault.png)`  
-> *(Yahan Local Vault tab ka screenshot dalein jisme saved masked records ki list ho)*
+> *(Insert a screenshot of the Local Vault tab showing stored masked records)*
 
-- **Zero Cloud Leak**: Data aapke computer se bahar nahi jata.
-- **Search & Filter**: Category (Cards, Passwords, Emails, Phones) ya website name se records search karein.
-- **Export JSON**: 1-click me apne secured data ka backup JSON file ke roop me download karein.
-- **Clear Vault**: Jab chahein ek click me sara local data permanently delete kar dein.
+- **Zero Cloud Leakage**: No data leaves your machine.
+- **Search & Category Filter**: Filter records by category (Cards, Passwords, Emails, Phones, IDs, Faces) or search by domain name.
+- **Export JSON**: Download your secured records as a structured JSON file with 1 click.
+- **Clear Vault**: Permanently delete all local records whenever you wish.
 
 ---
 
 ### 3. Security & Audit Log
 
-Yahan har privacy event ki live recording hoti hai:
-- Kab shield ON ya PAUSE hua.
-- Kab scan chala aur kitne sensitive items bachaye gaye.
-- Kounsi masking technique select ki gayi.
-- Kahi se koi data leak toh nahi ho raha.
+Displays a chronological security timeline:
+- Timestamped shield activations and pauses.
+- Number of sensitive items detected and shielded on each page.
+- Masking techniques applied.
+- Verification that zero unmasked data was transmitted externally.
 
 ---
 
-### 4. AI Directives & Voice Chat (Hindi + English)
+### 4. AI Directives & Voice Chat Console
 
-Aap SecureVision AI se bolkar (Voice) ya text type karke baat kar sakte hain!
+Communicate directly with your AI assistant using either voice or text!
 
 > 📷 **Screenshot Placeholder 6 (AI Directives Console):**  
 > `![AI Directives Console](screenshots/4-ai-directives-console.png)`  
-> *(Yahan AI Directives tab ka screenshot dalein jisme chat aur quick chips dikhein)*
+> *(Insert a screenshot of the AI Directives tab showing chat history and quick directive chips)*
 
 #### Voice & Conversational Features:
-- 🌐 **Language Selector**: Header me `Hindi (Indian) हिन्दी` ya `English (Indian/US)` select karein.
-- 🎤 **Voice Mic Button**: Microphone button dabayein aur Hindi ya English me bolein:
-  - *"Active page ko summarize kar do"*
-  - *"System status kya hai?"*
-  - *"Mere notes dikhao"*
-  - *"Screen par koi privacy leak toh nahi hai?"*
-- 🔊 **Realistic Male AI Voice**: AI Microsoft EdgeTTS ki premium natural Indian Male voice (**hi-IN-MadhurNeural**) me aapse baat karega!
+- 🌐 **Language Selector**: Switch between `Hindi (Indian) हिन्दी` and `English (Indian/US)`.
+- 🎤 **Voice Input (STT)**: Click the microphone icon and speak your directives:
+  - *"Summarize this active page"*
+  - *"Check system status and hardware health"*
+  - *"Show my saved notes"*
+  - *"Audit this screen for privacy leaks"*
+- 🔊 **Neural Voice Output (TTS)**: Features high-fidelity neural audio powered by Microsoft EdgeTTS (**hi-IN-MadhurNeural** for Hindi, **en-US-GuyNeural** for English).
 - ⚡ **Quick Directive Chips**: 1-click shortcuts: `📊 Status`, `📝 Notes`, `📑 Page Summary`, `🛡️ Shield Audit`.
-- ⛶ **Fullscreen / Expand [F11]**: Top-right corner me fullscreen button dabane par extension full tab me khul jata hai jahan bina band hue continuous hands-free voice chat kar sakte hain!
+- ⛶ **Fullscreen / Expand [F11]**: Click the expand button in the top-right corner to open the extension in a full browser tab for uninterrupted, hands-free conversational voice loops!
 
 ---
 
-### 5. Settings, API Key & Assistant Name
+### 5. Settings, API Key & Assistant Customization
 
-Yeh tab aapko poori azaadi deta hai apna AI Assistant khud customize karne ki!
+Full flexibility to customize your assistant and connect cloud backends.
 
 > 📷 **Screenshot Placeholder 7 (Settings Tab):**  
 > `![Settings Tab View](screenshots/5-settings-api-key.png)`  
-> *(Yahan Settings tab ka screenshot dalein jisme Gemini Key aur Assistant Name input ho)*
+> *(Insert a screenshot of the Settings tab showing the API Key input and Assistant Name field)*
 
-1. **🔑 Google Gemini API Key Input**:
-   - Apni free Google Gemini API key paste karein aur **"Save & Test Key"** dabayein.
-   - Extension backend ke through live Google servers se key verify karega:
-     - Agar key sahi hai: `✓ Gemini API Key successfully verified and connected!`
-     - Agar key galat ya expired hai: Turant clear notice aayega taaki aap nayi key daal sakein.
-2. **🏷️ AI Assistant Name**:
-   - Aap AI ka name badal kar kuch bhi rakh sakte hain: `SecureVision AI`, `JARVIS`, `Friday`, `Nova`, `Chanakya` etc.
-   - **"Save Name"** dabayein. AI usi identity ke sath baat karega!
+1. **🔑 Google Gemini API Key**:
+   - Paste your Google Gemini API key and click **"Save & Test Key"**.
+   - The backend validates the key live against Google servers:
+     - **Active Key**: `✓ Gemini API Key successfully verified and connected!`
+     - **Expired or Invalid Key**: A clear alert warns you so you can paste a fresh key.
+2. **🏷️ Custom AI Assistant Name**:
+   - Customize your AI's name to whatever you prefer: `SecureVision AI`, `JARVIS`, `Friday`, `Nova`, etc.
+   - Click **"Save Name"**. The assistant immediately adopts this identity in all conversations.
 3. **🌐 Backend Server URL**:
-   - Local testing ke liye default: `http://127.0.0.1:8000`
-   - Agar aapne backend cloud (Render, Railway, Cloud Run) par deploy kiya hai, toh apna live URL paste karke **"Connect Server"** dabayein!
+   - Default for local development: `http://127.0.0.1:8000`.
+   - If deployed to the cloud (Render, Railway, Cloud Run), paste your cloud URL and click **"Connect Server"**!
 
 ---
 
-## 🔑 Free Google Gemini API Key Kaise Banayein
+## 🔑 How to Get a Free Google Gemini API Key
 
-Google sabhi users ko Gemini API bilkul **FREE** deta hai bina kisi credit card ke!
+Google provides free access to the Gemini API with no credit card required:
 
-1. Apne browser me **[https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)** kholein.
-2. Apne Google account (Gmail) se Login karein.
-3. Blue button **"Create API key"** par click karein.
-4. "Create API key in new project" select karein.
-5. Jo key generate hogi (jo `AIzaSy...` se start hoti hai), use **Copy** kar lein.
-6. Extension popup me **⚙️ Settings** tab me jayein, paste karein aur **"Save & Test Key"** par click karein.
-7. Bas! Aapka AI Assistant active ho gaya!
+1. Open your browser and go to **[https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)**.
+2. Sign in with your standard Google (Gmail) account.
+3. Click the blue button: **"Create API key"**.
+4. Select **"Create API key in new project"**.
+5. Copy the generated key (starts with `AIzaSy...`).
+6. In the SecureVision AI extension popup, open **⚙️ Settings**, paste your key, and click **"Save & Test Key"**.
+7. That's it! Your AI Assistant is now fully connected.
 
-> 📷 **Screenshot Placeholder 8 (Google AI Studio):**  
+> 📷 **Screenshot Placeholder 8 (Google AI Studio Key Creation):**  
 > `![Google AI Studio API Key Creation](screenshots/gemini-api-key-setup.png)`  
-> *(Yahan Google AI Studio se API Key generate karne ka screenshot dalein)*
+> *(Insert a screenshot showing the API key created in Google AI Studio)*
 
 ---
 
 ## 🌐 Cloud Deployment Guide
 
-Aap chahein toh backend ko cloud par 24/7 host kar sakte hain taaki aapka extension bina local Python chalu kiye bhi kisi bhi computer se connect ho sake!
+You can host the Python FastAPI backend on cloud platforms so your extension can connect from any computer without running Python locally.
 
-### Option 1: Render.com par Free Deploy Karein
-1. Apne code ko GitHub par upload karein.
-2. [Render.com](https://render.com) par free account banayein -> **New Web Service** select karein.
-3. Apna GitHub repository connect karein.
-4. Settings me:
+### Option 1: Deploy on Render.com (Free)
+1. Push this project to your GitHub account.
+2. Create an account at [Render.com](https://render.com) and click **New Web Service**.
+3. Connect your GitHub repository.
+4. Set the following configuration:
    - **Root Directory**: `backend`
    - **Runtime**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `python run.py`
-5. Deploy click karein! Render aapko ek free URL dega jaise:
+5. Click **Deploy Web Service**. Render will assign you a live HTTPS URL:
    ```text
    https://securevision-ai-backend.onrender.com
    ```
-6. Is URL ko extension popup ke **⚙️ Settings -> Backend Server URL** me dalein aur **"Connect Server"** dabayein!
+6. Paste this URL into the extension's **⚙️ Settings -> Backend Server URL** and click **"Connect Server"**!
 
 ### Option 2: Docker Container (Cloud Run / AWS / VPS)
 ```bash
@@ -258,89 +262,89 @@ docker build -t securevision-backend .
 docker run -p 8000:8000 -e PORT=8000 securevision-backend
 ```
 
-### Option 3: Localhost par Run
-Simply double click karein:
+### Option 3: Local Windows Execution
+Simply double-click:
 ```cmd
 Run_Backend.bat
 ```
 
 ---
 
-## 📂 Folder Structure (Files ki Jaankari)
+## 📂 Folder Structure
 
 ```text
 SecoreVision-AI/
-├── backend/                      # Python FastAPI Cloud & Local Backend
+├── backend/                      # Production Python FastAPI Microservice
 │   ├── app/
-│   │   ├── main.py               # Main Server file (CORS & Routes)
-│   │   ├── config.py             # Dynamic Settings (API Key, Assistant Name)
-│   │   ├── routers/              # API Endpoints
-│   │   │   ├── ai.py             # Chat, Voice TTS, Page Summary, Analysis
-│   │   │   ├── config.py         # Key saving, Name saving, Testing
-│   │   │   ├── memory.py         # User Notes & Long-term memory
-│   │   │   └── system.py         # Health & System Telemetry
+│   │   ├── main.py               # Application entrypoint & CORS configuration
+│   │   ├── config.py             # Dynamic settings (API Key, Assistant Name, Env)
+│   │   ├── routers/              # Modular API Endpoints
+│   │   │   ├── ai.py             # Directives, EdgeTTS voice, page summary, vision planner
+│   │   │   ├── config.py         # Dynamic key validation & settings persistence
+│   │   │   ├── memory.py         # User notes & persistent memory storage
+│   │   │   └── system.py         # Health checks & system telemetry
 │   │   └── services/
-│   │       ├── gemini_service.py # Google Gemini API caller & key validator
+│   │       ├── gemini_service.py # Direct Gemini API caller with key-expiry detection
 │   │       ├── memory_service.py # Local JSON memory engine
-│   │       └── metrics_service.py# CPU, RAM, Network monitor
-│   ├── Dockerfile                # Cloud Docker Container recipe
-│   ├── requirements.txt          # Python packages list
-│   └── run.py                    # Uvicorn production server launcher
-├── extension/                    # Chrome Extension (Manifest V3)
+│   │       └── metrics_service.py# CPU, RAM, Network telemetry monitor
+│   ├── Dockerfile                # Production container specification
+│   ├── requirements.txt          # Python dependencies
+│   └── run.py                    # Production Uvicorn launcher
+├── extension/                    # Pure Chrome Extension (Manifest V3)
 │   ├── assets/                   # Extension icons & stylesheet
-│   ├── privacy/                  # In-browser Privacy & PII Scanner
-│   │   ├── pii-detector.js       # Cards, CVV, Passwords, Emails, Phones, SSN detector
-│   │   ├── face-detector.js      # On-device face detection
-│   │   └── redactor.js           # Canvas masking engine
+│   ├── privacy/                  # Client-side Privacy & PII Scanner
+│   │   ├── pii-detector.js       # Credit cards, passwords, emails, phones, SSN detector
+│   │   ├── face-detector.js      # On-device face & avatar detection
+│   │   └── redactor.js           # Client canvas masking engine
 │   ├── storage/
-│   │   └── indexeddb-vault.js    # Browser-side zero-leak vault
+│   │   └── indexeddb-vault.js    # Browser-side zero-leak IndexedDB vault
 │   ├── vision/
-│   │   └── vision-model.js       # Local WebGPU/WASM vision helpers
-│   ├── manifest.json             # Chrome Manifest specification
+│   │   └── vision-model.js       # Client WebGPU/WASM vision helpers
+│   ├── manifest.json             # Manifest V3 specification
 │   ├── popup.html                # Main Extension HUD Window
-│   ├── popup.css                 # Cyber-Shield Dark Theme UI
-│   ├── popup.js                  # Extension Controller (Multi-tab, Key test)
-│   ├── content.js                # In-page real-time DOM shield & masking
-│   └── background.js             # Service worker & Cloud router
-├── screenshots/                  # Folder jahan aap apne screenshots save kar sakte hain
-├── Run_Backend.bat               # 1-Click Windows Launcher
-└── README.md                     # Aap yeh documentation padh rahe hain
+│   ├── popup.css                 # Cyber-Shield dark UI theme
+│   ├── popup.js                  # Extension controller (key validation, tabs, scanner)
+│   ├── content.js                # In-page DOM scanner & visual shield overlays
+│   └── background.js             # Service worker & cloud router
+├── screenshots/                  # Folder to store your project screenshots
+├── Run_Backend.bat               # 1-Click Windows Backend Launcher
+└── README.md                     # You are reading this file
 ```
 
 ---
 
-## ❓ Troubleshooting & FAQs (Agar Koi Dikkat Aaye)
+## ❓ Troubleshooting & FAQs
 
-### Q1: Extension popup khola par "Shield" kaam nahi kar raha?
-- **Karan**: Chrome ki security rule ke anusar browser ke internal pages (jaise `chrome://extensions`, `chrome://settings`, ya new empty tab) par koi bhi extension inject hone se Chrome rok deta hai.
-- **Solution**: Kisi bhi normal website (jaise [google.com](https://www.google.com), [amazon.in](https://www.amazon.in), ya kisi login page) par jayein aur wahan extension ka **"Scan & Shield Screen"** button dabayein. Yeh turant mask kar dega!
+### Q1: The extension says "0 items detected" or does not mask on my current tab. Why?
+- **Cause**: Chrome security strictly forbids browser extensions from running scripts on internal browser pages (such as `chrome://extensions`, `chrome://settings`, or empty `about:blank` tabs).
+- **Solution**: Open any regular webpage (such as [google.com](https://www.google.com), [amazon.com](https://www.amazon.com), or any online form) and click **"Scan & Shield Screen"**. The shield will immediately detect sensitive items and apply visual masks.
 
-### Q2: Maine extension abhi load kiya, purane tabs par shield nahi aa raha?
-- **Solution**: Jab aap pehli baar extension install karte hain, tab jo webpage pehle se khula hua tha use ek baar refresh (F5 ya Reload) kar lein. Uske baad naye khulne wale sabhi tabs automatic protect ho jayenge!
+### Q2: I just installed or reloaded the extension, but existing open tabs are not shielded.
+- **Solution**: When an extension is first loaded or updated in Chrome, existing open tabs must be refreshed once (press **F5** or click **Reload**). All newly opened tabs and links are protected automatically.
 
-### Q3: Gemini API Key lagane par "Invalid Key" ya "Wrong Format" bol raha hai?
-- **Solution**: Google Gemini API key hamesha `AIzaSy...` se start hoti hai.
-  - Make sure karein aapne poori key copy ki hai (kam se kam 39 characters).
-  - Kisi dusri company (jaise OpenAI `sk-...`) ki key na dalein.
-  - [Google AI Studio](https://aistudio.google.com/app/apikey) se free key generate karein.
+### Q3: Why does the API key show "Invalid Key" or "Wrong Format"?
+- **Solution**: Google Gemini API keys always begin with `AIzaSy...` and are at least 39 characters long.
+  - Ensure you copied the entire key without extra quotes or spaces.
+  - Do not use keys from other providers (such as OpenAI keys starting with `sk-...`).
+  - Generate a free key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-### Q4: Voice microphone prompt nahi dikh raha ya popup band ho jata hai?
-- **Solution**: Chrome me extension popup se click karne par agar popup band ho raha hai, toh popup ke top-right me maujood **⛶ (Fullscreen / Full Tab)** button dabayein (ya F11). Isse extension full tab me khul jayega aur microphone permission hamesha ke liye allow ho jayegi!
+### Q4: The voice microphone does not respond or the popup closes when I speak.
+- **Solution**: In Chrome, extension popups can close if an operating system permission prompt appears. To enable seamless, continuous voice chat, click the **⛶ (Fullscreen / Full Tab)** button in the top-right corner of the popup. This opens the HUD in a full browser tab where microphone permissions persist permanently.
 
-### Q5: Kya mera sensitive data internet par ja raha hai?
-- **Bilkul Nahi!** SecureVision AI ka core architecture hi **Zero-Leak Client Privacy** par bana hai:
-  - Detection aur Masking aapke computer ke andar hoti hai.
-  - Screen par parda lagne ke baad hi sanitised tokens generate hote hain.
-  - Asli passwords aur cards hamesha encrypted local browser vault me hi rehte hain.
+### Q5: Is my sensitive data sent to external cloud servers?
+- **No, absolutely not.** SecureVision AI is architected from the ground up on **Zero-Leak Client-Side Privacy**:
+  - Scanning and masking occur entirely inside your browser before any data is processed.
+  - Only masked, sanitized context is ever made available to the AI agent.
+  - Passwords and card numbers remain strictly within your browser's encrypted local sandbox storage.
 
 ---
 
 ## 🔒 Security & Privacy Manifesto
 
-> *"Aapki privacy aapka adhikaar hai. Kisi bhi AI ko aapka private screen data dekhne ki anumati nahi honi chahiye."*
+> *"Privacy is a fundamental human right. No AI agent, vision model, or screen grabber should have unrestricted access to your private screen data without explicit consent and impenetrable masking."*
 
-SecureVision AI ensure karta hai ki aap bina kisi chinta ke AI assistants aur agents ka labh utha sakein, poori suraksha aur shanti ke sath.
+SecureVision AI empowers you to leverage autonomous AI capabilities with confidence, security, and peace of mind.
 
 ---
 
-*Made with ❤️ for Privacy, Security & Autonomous AI.*
+*Engineered with precision for Privacy, Security, and Autonomous AI Pair Programming.*

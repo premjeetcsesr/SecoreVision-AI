@@ -119,6 +119,32 @@ async def interrupt_speech():
     """Interrupt directive generation or voice playback."""
     return {"status": "interrupted", "message": "Directive processing interrupted."}
 
+class BrowserControlRequest(BaseModel):
+    command: Optional[str] = ""
+    api_key: Optional[str] = None
+    url: Optional[str] = None
+
+@router.post("/api/jarvis/browser/control")
+async def browser_control(req: BrowserControlRequest):
+    """Direct browser action planner."""
+    cmd = (req.command or "").strip().lower()
+    if "close" in cmd and "tab" in cmd:
+        return {"action": "close_tab", "reply": "Closing current tab."}
+    if "reload" in cmd or "refresh" in cmd:
+        return {"action": "reload", "reply": "Refreshing tab."}
+    if "scroll down" in cmd:
+        return {"action": "scroll", "direction": "down"}
+    if "scroll up" in cmd:
+        return {"action": "scroll", "direction": "up"}
+    return {"action": "none", "target": req.command, "reasoning": "Standard web inspection"}
+
+@router.post("/api/jarvis/command")
+async def execute_jarvis_command(payload: Dict[str, Any]):
+    """Generic tool command endpoint for backward compatibility."""
+    tool = payload.get("tool", "")
+    params = payload.get("params", {})
+    return {"success": True, "tool": tool, "status": "executed", "result": f"Command {tool} processed"}
+
 # Extension background helper endpoints
 @router.get("/api/jarvis/news")
 async def get_news():

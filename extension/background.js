@@ -11,7 +11,8 @@
  * 7. Broadcast status back to Dashboard & Popup
  */
 
-const API_ENDPOINT = 'http://127.0.0.1:8000/api/analyze';
+let currentBackendUrl = 'http://127.0.0.1:8000';
+const API_ENDPOINT = () => `${currentBackendUrl}/api/analyze`;
 
 // Universal protection enabled across all web origins
 const ALLOW_ALL_ORIGINS = true;
@@ -21,8 +22,9 @@ let isGlobalShieldActive = false;
 let globalShieldStyle = 'blackout';
 
 // Initialize global state from persistent local storage
-chrome.storage.local.get(['screen_shield_enabled', 'screen_shield_style'], (res) => {
+chrome.storage.local.get(['securevision_backend_url', 'screen_shield_enabled', 'screen_shield_style'], (res) => {
   if (res) {
+    if (res.securevision_backend_url) currentBackendUrl = res.securevision_backend_url.replace(/\/+$/, '');
     isGlobalShieldActive = !!res.screen_shield_enabled;
     if (res.screen_shield_style) globalShieldStyle = res.screen_shield_style;
   }
@@ -31,6 +33,9 @@ chrome.storage.local.get(['screen_shield_enabled', 'screen_shield_style'], (res)
 // Broadcast state to all tabs when changed
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local') {
+    if (changes.securevision_backend_url) {
+      currentBackendUrl = (changes.securevision_backend_url.newValue || 'http://127.0.0.1:8000').replace(/\/+$/, '');
+    }
     if (changes.screen_shield_enabled !== undefined) {
       isGlobalShieldActive = !!changes.screen_shield_enabled.newValue;
       broadcastShieldStateToAllTabs(isGlobalShieldActive, globalShieldStyle);
@@ -203,7 +208,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.type === 'JARVIS_DIRECT_COMMAND') {
-    fetch('http://127.0.0.1:8000/api/jarvis/command', {
+    fetch(`${currentBackendUrl}/api/jarvis/command`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tool: request.tool, params: request.params || {} })
@@ -215,7 +220,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.type === 'JARVIS_GET_METRICS') {
-    fetch('http://127.0.0.1:8000/api/jarvis/metrics')
+    fetch(`${currentBackendUrl}/api/jarvis/metrics`)
       .then(r => r.json())
       .then(sendResponse)
       .catch(() => {
@@ -235,7 +240,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.type === 'JARVIS_GET_NOTES') {
     const q = request.query ? `?q=${encodeURIComponent(request.query)}` : '';
-    fetch(`http://127.0.0.1:8000/api/jarvis/notes${q}`)
+    fetch(`${currentBackendUrl}/api/jarvis/notes${q}`)
       .then(r => r.json())
       .then(sendResponse)
       .catch(err => sendResponse({ success: true, notes: [] }));
@@ -243,7 +248,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.type === 'JARVIS_MANAGE_NOTES') {
-    fetch('http://127.0.0.1:8000/api/jarvis/notes', {
+    fetch(`${currentBackendUrl}/api/jarvis/notes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request.payload || {})
@@ -255,7 +260,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.type === 'JARVIS_DELETE_NOTE') {
-    fetch(`http://127.0.0.1:8000/api/jarvis/notes/${request.id}`, {
+    fetch(`${currentBackendUrl}/api/jarvis/notes/${request.id}`, {
       method: 'DELETE'
     })
       .then(r => r.json())
@@ -265,7 +270,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.type === 'JARVIS_GET_NEWS') {
-    fetch('http://127.0.0.1:8000/api/jarvis/news')
+    fetch(`${currentBackendUrl}/api/jarvis/news`)
       .then(r => r.json())
       .then(sendResponse)
       .catch(() => {
@@ -293,12 +298,12 @@ async function handleJarvisGetConfig() {
   } catch (e) {}
 
   try {
-    const resp = await fetch('http://127.0.0.1:8000/api/jarvis/config');
+    const resp = await fetch(`${currentBackendUrl}/api/jarvis/config`);
     if (resp.ok) {
       const data = await resp.json();
       if (!data.has_api_key && storedKey) {
         // Sync stored key to backend
-        await fetch('http://127.0.0.1:8000/api/jarvis/config/key', {
+        await fetch(`${currentBackendUrl}/api/jarvis/config/key`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ api_key: storedKey })
@@ -327,7 +332,7 @@ async function handleJarvisSaveKey(apiKey) {
   await chrome.storage.local.set({ jarvis_gemini_api_key: cleanKey });
 
   try {
-    const resp = await fetch('http://127.0.0.1:8000/api/jarvis/config/key', {
+    const resp = await fetch(`${currentBackendUrl}/api/jarvis/config/key`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ api_key: cleanKey })
@@ -360,7 +365,7 @@ async function handleJarvisAsk(prompt, userKey = null) {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 1600);
-    const resp = await fetch('http://127.0.0.1:8000/api/jarvis/ask', {
+    const resp = await fetch(`${currentBackendUrl}/api/jarvis/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
@@ -520,7 +525,7 @@ async function handleJarvisExplainScreen(customPrompt = '', userKey = null) {
     }
   }
 
-  const resp = await fetch('http://127.0.0.1:8000/api/jarvis/screen/explain', {
+  const resp = await fetch(`${currentBackendUrl}/api/jarvis/screen/explain`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -550,7 +555,7 @@ async function handleJarvisBrowserTask(command, userKey = null) {
   await ensureContentScriptInjected(activeTab.id);
 
   // 1. Ask backend for structured task plan
-  const planResp = await fetch('http://127.0.0.1:8000/api/jarvis/browser/control', {
+  const planResp = await fetch(`${currentBackendUrl}/api/jarvis/browser/control`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -737,7 +742,7 @@ async function handleAgentTask(taskText, redactionStyle = 'blackout') {
 
   // 0. Fast Path: Check if task matches OS / Desktop / JARVIS action
   try {
-    const askResp = await fetch('http://127.0.0.1:8000/api/jarvis/ask', {
+    const askResp = await fetch(`${currentBackendUrl}/api/jarvis/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -835,7 +840,7 @@ async function handleAgentTask(taskText, redactionStyle = 'blackout') {
   let actionDecision = null;
 
   try {
-    const response = await fetch(API_ENDPOINT, {
+    const response = await fetch(API_ENDPOINT(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -1130,7 +1135,7 @@ async function handleSaveVault() {
  */
 async function checkBackendHealth() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/api/health', { method: 'GET' });
+    const res = await fetch(`${currentBackendUrl}/api/health`, { method: 'GET' });
     if (res.ok) {
       const data = await res.json();
       return { connected: true, details: data };
@@ -1146,7 +1151,7 @@ async function checkBackendHealth() {
  */
 async function handleJarvisAsk(prompt, apiKey) {
   try {
-    const res = await fetch('http://127.0.0.1:8000/ask', {
+    const res = await fetch(`${currentBackendUrl}/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: prompt })
@@ -1169,7 +1174,7 @@ function getOfflineJarvisHindiReply(prompt) {
 
 async function handleJarvisExplainScreen(prompt, apiKey) {
   try {
-    const res = await fetch('http://127.0.0.1:8000/screen/explain');
+    const res = await fetch(`${currentBackendUrl}/screen/explain`);
     if (res.ok) {
       const data = await res.json();
       return { success: true, explanation: data.response || 'Screen analyzed.' };

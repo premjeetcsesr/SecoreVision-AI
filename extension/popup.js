@@ -49,15 +49,57 @@ document.addEventListener('DOMContentLoaded', () => {
     faces: 0
   };
 
-  // Helper to send messages safely to active Chrome tab
+  // Helper to send messages safely to active Chrome tab with auto-injection & restricted tab handling
   async function sendActiveTabMessage(message) {
-    if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+    if (typeof chrome === 'undefined' || !chrome.tabs || !chrome.tabs.query) {
+      return null;
+    }
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab || !tab.id) return null;
+
+      // Handle restricted URLs (chrome://, chrome-extension://, edge://, about:, devtools:)
+      const url = tab.url || '';
+      if (url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('edge://') || url.startsWith('about:') || url.startsWith('devtools://') || url.startsWith('view-source:')) {
+        return {
+          isRestricted: true,
+          error: 'RESTRICTED_TAB',
+          message: 'Chrome security restricts extensions on internal browser pages. Please open a standard website (e.g. google.com or any webpage) to use the Privacy Shield.'
+        };
+      }
+
       try {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (tab && tab.id) {
-          return await chrome.tabs.sendMessage(tab.id, message);
+        return await chrome.tabs.sendMessage(tab.id, message);
+      } catch (sendErr) {
+        // Content script might not be injected yet on this page (e.g. opened before extension load)
+        if (chrome.scripting && chrome.scripting.executeScript) {
+          try {
+            await chrome.scripting.executeScript({
+              target: { tabId: tab.id },
+              files: [
+                'storage/indexeddb-vault.js',
+                'privacy/pii-detector.js',
+                'privacy/face-detector.js',
+                'privacy/redactor.js',
+                'vision/vision-model.js',
+                'content.js'
+              ]
+            });
+            if (chrome.scripting.insertCSS) {
+              await chrome.scripting.insertCSS({
+                target: { tabId: tab.id },
+                files: ['assets/content.css']
+              }).catch(() => {});
+            }
+            await new Promise(r => setTimeout(r, 120));
+            return await chrome.tabs.sendMessage(tab.id, message);
+          } catch (injectErr) {
+            console.debug('[Popup] Injection attempt note:', injectErr);
+          }
         }
-      } catch (_) {}
+      }
+    } catch (topErr) {
+      console.debug('[Popup] Tab query error:', topErr);
     }
     return null;
   }
@@ -142,8 +184,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         applyShieldStateToUI(currentShieldActive);
         applyShieldModeToUI(currentShieldMode);
+        reloadVaultRecords();
       });
     }
+
+    // Ping active tab to get live shield status & current detection counts
+    sendActiveTabMessage({ type: 'PING' }).then(pingRes => {
+      if (pingRes) {
+        if (pingRes.isShieldActive !== undefined) {
+          applyShieldStateToUI(pingRes.isShieldActive);
+        }
+        if (pingRes.shieldStyle) {
+          applyShieldModeToUI(pingRes.shieldStyle);
+        }
+        const dets = pingRes.detections || {};
+        const cats = pingRes.categories || {};
+        const normalized = {
+          cards: dets.cards !== undefined ? dets.cards : (cats.creditCard || 0),
+          passwords: dets.passwords !== undefined ? dets.passwords : ((cats.password || 0) + (cats.apiKey || 0) + (cats.jwt || 0)),
+          emails: dets.emails !== undefined ? dets.emails : (cats.email || 0),
+          phones: dets.phones !== undefined ? dets.phones : (cats.phone || 0),
+          ssn: dets.ssn !== undefined ? dets.ssn : ((cats.ssn || 0) + (cats.aadhaar || 0) + (cats.panCard || 0)),
+          faces: dets.faces !== undefined ? dets.faces : (cats.face || 0)
+        };
+        updateMetricsDisplay(normalized);
+      }
+    }).catch(() => {});
 
     function applyShieldStateToUI(active) {
       currentShieldActive = active;
@@ -229,15 +295,49 @@ document.addEventListener('DOMContentLoaded', () => {
         addAuditLog('Initiated full page privacy & PII scan', 'info');
 
         try {
+          // If shield is currently off, turn it on so the page is immediately protected
+          if (!currentShieldActive) {
+            applyShieldStateToUI(true);
+            if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+              chrome.runtime.sendMessage({ type: 'SET_GLOBAL_SHIELD', active: true }).catch(() => {});
+            }
+            await sendActiveTabMessage({ type: 'TOGGLE_SCREEN_SHIELD', active: true });
+          }
+
           const resp = await sendActiveTabMessage({ type: 'SCAN_PAGE_SENSITIVE_DATA' });
-          if (resp && resp.detections) {
-            updateMetricsDisplay(resp.detections);
-            addAuditLog(`Scan completed: ${resp.totalCount || 0} sensitive items detected.`, 'shield');
+          if (resp && resp.isRestricted) {
+            addAuditLog(resp.message, 'info');
+          } else if (resp) {
+            const dets = resp.detections || {};
+            const cats = resp.categories || resp.metrics || {};
+            const normalized = {
+              cards: dets.cards !== undefined ? dets.cards : (cats.creditCard || 0),
+              passwords: dets.passwords !== undefined ? dets.passwords : ((cats.password || 0) + (cats.apiKey || 0) + (cats.jwt || 0)),
+              emails: dets.emails !== undefined ? dets.emails : (cats.email || 0),
+              phones: dets.phones !== undefined ? dets.phones : (cats.phone || 0),
+              ssn: dets.ssn !== undefined ? dets.ssn : ((cats.ssn || 0) + (cats.aadhaar || 0) + (cats.panCard || 0)),
+              faces: dets.faces !== undefined ? dets.faces : (cats.face || 0)
+            };
+            updateMetricsDisplay(normalized);
+
+            const total = resp.totalCount !== undefined ? resp.totalCount : (resp.totalEntities !== undefined ? resp.totalEntities : 0);
+            if (total > 0) {
+              addAuditLog(`Scan completed: ${total} sensitive items detected & shielded.`, 'shield');
+            } else {
+              addAuditLog('Scan completed: 0 sensitive items detected on page.', 'info');
+            }
+
+            if (Array.isArray(resp.vaultRecords) && resp.vaultRecords.length > 0) {
+              cachedVaultRecords = mergeVaultRecords(cachedVaultRecords, resp.vaultRecords);
+              updateVaultCountBadge();
+            }
+            reloadVaultRecords();
           } else {
-            addAuditLog('Scan completed: 0 sensitive items detected on viewport.', 'info');
+            addAuditLog('Could not communicate with active tab. Please open a website (e.g. google.com) and try again.', 'info');
           }
         } catch (err) {
           console.debug('Scan note:', err);
+          addAuditLog(`Scan notice: ${err.message || 'Error communicating with page'}`, 'info');
         } finally {
           scanNowBtn.disabled = false;
           scanNowBtn.innerHTML = `
@@ -258,16 +358,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           const resp = await sendActiveTabMessage({ type: 'SAVE_TO_LOCAL_VAULT' });
-          if (resp && resp.savedCount !== undefined) {
-            addAuditLog(`Saved ${resp.savedCount} sensitive records to local sandbox vault.`, 'shield');
-            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-              const res = await chrome.storage.local.get(['screen_vault_records', 'privacy_vault_records']);
-              const recs1 = Array.isArray(res.screen_vault_records) ? res.screen_vault_records : [];
-              const recs2 = Array.isArray(res.privacy_vault_records) ? res.privacy_vault_records : [];
-              cachedVaultRecords = mergeVaultRecords(recs1, recs2);
-              updateVaultCountBadge();
-              renderVaultRecords();
-            }
+          if (resp && resp.isRestricted) {
+            addAuditLog(resp.message, 'info');
+          } else if (resp) {
+            const saved = (resp.savedCount !== undefined) ? resp.savedCount : (resp.count !== undefined ? resp.count : 0);
+            addAuditLog(`Saved ${saved} sensitive records to local sandbox vault.`, 'shield');
+            await reloadVaultRecords();
+          } else {
+            addAuditLog('Saved sensitive records to local vault.', 'shield');
+            await reloadVaultRecords();
           }
         } catch (_) {}
         finally {
@@ -317,6 +416,27 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateVaultCountBadge() {
     const badge = document.getElementById('vault-count-badge');
     if (badge) badge.textContent = cachedVaultRecords.length;
+  }
+
+  async function reloadVaultRecords() {
+    let recs1 = [], recs2 = [], idbRecs = [];
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      try {
+        const res = await chrome.storage.local.get(['screen_vault_records', 'privacy_vault_records']);
+        if (res) {
+          recs1 = Array.isArray(res.screen_vault_records) ? res.screen_vault_records : [];
+          recs2 = Array.isArray(res.privacy_vault_records) ? res.privacy_vault_records : [];
+        }
+      } catch (_) {}
+    }
+    if (typeof window !== 'undefined' && window.PrivacyShieldDB && window.PrivacyShieldDB.getAllVaultRecords) {
+      try {
+        idbRecs = await window.PrivacyShieldDB.getAllVaultRecords() || [];
+      } catch (_) {}
+    }
+    cachedVaultRecords = mergeVaultRecords(recs1, mergeVaultRecords(recs2, idbRecs));
+    updateVaultCountBadge();
+    renderVaultRecords();
   }
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -407,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="vault-item-top">
           <span class="vault-badge ${record.category || 'card'}">${(record.category || 'DATA').toUpperCase()}</span>
           <span class="vault-domain">${escapeHtml(record.domain || 'Active Tab')}</span>
-          <span class="vault-time">${formatTime(record.timestamp)}</span>
+          <span class="vault-time">${formatTime(record.timestamp || record.detectedAt || record.date)}</span>
         </div>
         <div class="vault-item-body">
           <code class="vault-masked">${escapeHtml(record.masked || record.token || '••••••••')}</code>
@@ -527,7 +647,10 @@ document.addEventListener('DOMContentLoaded', () => {
           if (res.ok && data.success) {
             activeGeminiApiKey = key;
             if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-              await chrome.storage.local.set({ jarvis_gemini_api_key: key });
+              await chrome.storage.local.set({
+                jarvis_gemini_api_key: key,
+                securevision_gemini_api_key: key
+              });
             }
             showFeedback(keyFeedback, '✓ Gemini API Key successfully verified and connected!', 'success');
             if (keyBadge) {
@@ -548,7 +671,10 @@ document.addEventListener('DOMContentLoaded', () => {
           // If backend offline, save locally
           activeGeminiApiKey = key;
           if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-            await chrome.storage.local.set({ jarvis_gemini_api_key: key });
+            await chrome.storage.local.set({
+              jarvis_gemini_api_key: key,
+              securevision_gemini_api_key: key
+            });
           }
           showFeedback(keyFeedback, 'Saved key locally in browser sandbox (backend offline).', 'success');
           hideKeyAlertBanner();
@@ -569,6 +695,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         assistantName = name;
         localStorage.setItem('securevision_assistant_name', name);
+        if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+          await chrome.storage.local.set({ securevision_assistant_name: name });
+        }
         if (nameDisplay) nameDisplay.textContent = name;
         updateAssistantNameInUI(name);
 
@@ -593,6 +722,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         BACKEND_URL = url;
         localStorage.setItem('securevision_backend_url', url);
+        if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+          await chrome.storage.local.set({ securevision_backend_url: url });
+        }
         saveUrlBtn.disabled = true;
         showFeedback(urlFeedback, `Connecting to ${url}...`, 'loading');
 
@@ -628,16 +760,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load initial stored values
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['jarvis_gemini_api_key'], (res) => {
-        if (res && res.jarvis_gemini_api_key) {
-          activeGeminiApiKey = res.jarvis_gemini_api_key;
-          if (keyInput) keyInput.value = activeGeminiApiKey;
-          if (keyBadge) {
-            keyBadge.textContent = 'Key Stored';
-            keyBadge.className = 'settings-badge connected';
+      chrome.storage.local.get(['jarvis_gemini_api_key', 'securevision_gemini_api_key', 'securevision_backend_url', 'securevision_assistant_name'], (res) => {
+        if (res) {
+          const key = res.securevision_gemini_api_key || res.jarvis_gemini_api_key;
+          if (key) {
+            activeGeminiApiKey = key;
+            if (keyInput) keyInput.value = activeGeminiApiKey;
+            if (keyBadge) {
+              keyBadge.textContent = 'Key Stored';
+              keyBadge.className = 'settings-badge connected';
+            }
+          } else {
+            showKeyAlertBanner('Gemini API Key missing! Click here to configure.');
           }
-        } else {
-          showKeyAlertBanner('Gemini API Key missing! Click here to configure.');
+          if (res.securevision_backend_url) {
+            BACKEND_URL = res.securevision_backend_url;
+            if (urlInput) urlInput.value = BACKEND_URL;
+          }
+          if (res.securevision_assistant_name) {
+            assistantName = res.securevision_assistant_name;
+            if (nameInput) nameInput.value = assistantName;
+            if (nameDisplay) nameDisplay.textContent = assistantName;
+            updateAssistantNameInUI(assistantName);
+          }
         }
       });
     }
@@ -1031,10 +1176,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!ts) return '';
     try {
       const d = new Date(ts);
-      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch (_) {
       return '';
     }
+  }
+
+  // Real-time telemetry listener from content script
+  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener((msg) => {
+      if (msg && msg.type === 'SHIELD_METRICS_UPDATED') {
+        const cats = msg.categories || {};
+        const normalized = {
+          cards: cats.creditCard || 0,
+          passwords: (cats.password || 0) + (cats.apiKey || 0) + (cats.jwt || 0),
+          emails: cats.email || 0,
+          phones: cats.phone || 0,
+          ssn: (cats.ssn || 0) + (cats.aadhaar || 0) + (cats.panCard || 0),
+          faces: cats.face || 0
+        };
+        updateMetricsDisplay(normalized);
+        if (msg.isShieldActive !== undefined) {
+          applyShieldStateToUI(msg.isShieldActive);
+        }
+      }
+    });
   }
 
   // ──────────────────────────────────────────────────────────────────────────

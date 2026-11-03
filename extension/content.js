@@ -973,17 +973,30 @@
                   detectedAt: now
                 });
               });
+              const scanDetections = {
+                cards: (piiDetector.counters.creditCard || 0),
+                passwords: (piiDetector.counters.password || 0) + (piiDetector.counters.apiKey || 0) + (piiDetector.counters.jwt || 0),
+                emails: (piiDetector.counters.email || 0),
+                phones: (piiDetector.counters.phone || 0),
+                ssn: (piiDetector.counters.ssn || 0) + (piiDetector.counters.aadhaar || 0) + (piiDetector.counters.panCard || 0),
+                faces: (piiDetector.counters.face || 0)
+              };
+
               sendResponse({
                 success: true,
                 totalEntities: entities.length,
+                totalCount: entities.length,
+                detections: scanDetections,
                 categories: piiDetector.counters,
                 metrics: piiDetector.counters,
                 vaultRecords: vaultRecords,
+                savedCount: vaultRecords.length,
+                count: vaultRecords.length,
                 isShieldActive: isShieldActive,
                 shieldStyle: shieldStyle
               });
             } catch (err) {
-              sendResponse({ success: false, error: err.message, totalEntities: 0, categories: {}, vaultRecords: [] });
+              sendResponse({ success: false, error: err.message, totalEntities: 0, totalCount: 0, detections: {}, categories: {}, vaultRecords: [], savedCount: 0, count: 0 });
             }
           })();
           return true;
@@ -1007,7 +1020,12 @@
         }
 
         case 'SAVE_TO_LOCAL_VAULT': {
-          storeDetectedDataLocally().then(res => sendResponse(res));
+          storeDetectedDataLocally().then(res => {
+            const sc = (res && res.count !== undefined) ? res.count : (res && res.savedCount !== undefined ? res.savedCount : 0);
+            sendResponse({ ...res, count: sc, savedCount: sc });
+          }).catch(err => {
+            sendResponse({ success: false, error: err.message, count: 0, savedCount: 0 });
+          });
           return true;
         }
 
@@ -1244,7 +1262,24 @@
         }
 
         case 'PING': {
-          sendResponse({ status: 'ready', url: window.location.href, isShieldActive });
+          const pingDetections = {
+            cards: (piiDetector.counters.creditCard || 0),
+            passwords: (piiDetector.counters.password || 0) + (piiDetector.counters.apiKey || 0) + (piiDetector.counters.jwt || 0),
+            emails: (piiDetector.counters.email || 0),
+            phones: (piiDetector.counters.phone || 0),
+            ssn: (piiDetector.counters.ssn || 0) + (piiDetector.counters.aadhaar || 0) + (piiDetector.counters.panCard || 0),
+            faces: (piiDetector.counters.face || 0)
+          };
+          sendResponse({
+            status: 'ready',
+            url: window.location.href,
+            isShieldActive: isShieldActive,
+            shieldStyle: shieldStyle,
+            totalEntities: (detectedEntities || []).length,
+            totalCount: (detectedEntities || []).length,
+            detections: pingDetections,
+            categories: piiDetector ? piiDetector.counters : {}
+          });
           return true;
         }
 
